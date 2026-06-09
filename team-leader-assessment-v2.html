@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>팀장 역량 진단 | Team Leader Skills Check</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --p50:#EEEDFE;--p200:#AFA9EC;--p400:#7F77DD;--p600:#534AB7;--p800:#3C3489;
+  --t50:#E1F5EE;--t400:#1D9E75;--t600:#0F6E56;
+  --a50:#FAEEDA;--a400:#BA7517;--a600:#854F0B;
+  --c50:#FAECE7;--c400:#D85A30;
+  --g50:#F1EFE8;--g100:#D3D1C7;--g400:#888780;--g600:#5F5E5A;--g800:#444441;
+  --b50:#E6F1FB;--b400:#378ADD;--b600:#185FA5;
+  --gn50:#EAF3DE;--gn400:#639922;
+  --bg:#FAF9F6;--text:#1A1918;--muted:#5F5E5A;
+  --border:rgba(0,0,0,0.1);--card:#FFFFFF;
+  --rmd:10px;--rlg:16px;--rxl:24px;
+}
+@media(prefers-color-scheme:dark){:root{
+  --bg:#1A1918;--text:#F1EFE8;--muted:#B4B2A9;--border:rgba(255,255,255,0.1);--card:#26251F;
+  --p50:#26215C;--p200:#534AB7;--p400:#7F77DD;--p600:#AFA9EC;
+  --t50:#04342C;--t400:#1D9E75;--t600:#5DCAA5;
+  --a50:#412402;--a400:#EF9F27;--a600:#FAC775;
+  --c50:#4A1B0C;--c400:#F0997B;
+  --g50:#2C2C2A;--g100:#444441;--g400:#B4B2A9;--g600:#D3D1C7;--g800:#F1EFE8;
+  --b50:#042C53;--b400:#378ADD;--b600:#85B7EB;
+  --gn50:#173404;--gn400:#97C459;
+}}
+body{font-family:'Noto Sans KR',-apple-system,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:16px;line-height:1.7}
+.wrap{max-width:800px;margin:0 auto;padding:2rem 1.5rem 6rem}
+
+/* NAV TABS */
+.nav-tabs{display:flex;gap:4px;background:var(--g50);border-radius:var(--rlg);padding:4px;margin-bottom:2.5rem}
+.nav-tab{flex:1;text-align:center;padding:10px;border-radius:12px;font-size:14px;font-weight:500;cursor:pointer;border:none;background:none;color:var(--muted);font-family:inherit;transition:all .2s}
+.nav-tab.active{background:var(--card);color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.nav-tab:hover:not(.active){color:var(--text)}
+
+/* PAGE VISIBILITY */
+.page{display:none}.page.visible{display:block}
+
+/* HEADER */
+.site-header{display:flex;align-items:center;gap:12px;padding:1.5rem 0 2.5rem}
+.logo-dot{width:36px;height:36px;border-radius:10px;background:var(--p400);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.logo-dot svg{width:18px;height:18px;fill:#fff}
+.site-header h1{font-size:15px;font-weight:500;color:var(--muted)}
+
+/* HERO */
+.hero{padding:.5rem 0 2.5rem}
+.eyebrow{display:inline-block;background:var(--p50);color:var(--p600);font-size:12px;font-weight:500;letter-spacing:.08em;padding:4px 12px;border-radius:100px;margin-bottom:1.25rem}
+.hero h2{font-size:clamp(26px,5vw,38px);font-weight:700;line-height:1.25;margin-bottom:1rem}
+.hero p{font-size:17px;color:var(--muted);max-width:560px;margin-bottom:1.75rem}
+.hero-meta{display:flex;gap:1.5rem;flex-wrap:wrap}
+.meta-item{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--muted)}
+.meta-dot{width:6px;height:6px;border-radius:50%;background:var(--p400)}
+
+/* INFO CARD */
+.info-card{background:var(--card);border:1px solid var(--border);border-radius:var(--rlg);padding:1.5rem;margin-bottom:2rem}
+.info-header{display:flex;align-items:center;gap:10px;margin-bottom:1rem;font-weight:500;font-size:15px}
+.info-icon{width:32px;height:32px;border-radius:8px;background:var(--a50);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.scale-guide{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:.75rem}
+.scale-item{background:var(--g50);border-radius:8px;padding:10px 6px;text-align:center}
+.scale-num{font-size:18px;font-weight:700;color:var(--p400);display:block;line-height:1}
+.scale-label{font-size:11px;color:var(--muted);margin-top:4px;display:block;line-height:1.4}
+
+/* SECTION LABEL */
+.sec-label{font-size:12px;font-weight:500;letter-spacing:.08em;color:var(--muted);margin-bottom:1.25rem;display:flex;align-items:center;gap:8px}
+.sec-label::after{content:'';flex:1;height:1px;background:var(--border)}
+
+/* SKILL CARD */
+.skill-card{background:var(--card);border:1px solid var(--border);border-radius:var(--rlg);padding:1.5rem;margin-bottom:1rem;transition:border-color .2s}
+.skill-card:hover{border-color:var(--p200)}
+.skill-header{display:flex;align-items:flex-start;gap:14px;margin-bottom:1.25rem}
+.skill-icon-wrap{width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.skill-title{font-size:17px;font-weight:500;margin-bottom:3px}
+.skill-desc{font-size:13px;color:var(--muted);line-height:1.5}
+.skill-ex{font-size:12px;color:var(--p400);background:var(--p50);border-radius:6px;padding:6px 10px;margin-top:8px;line-height:1.6}
+.slider-labels{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:6px}
+.slider-row{display:flex;align-items:center;gap:12px}
+.slider-wrap{flex:1}
+input[type=range]{-webkit-appearance:none;width:100%;height:4px;border-radius:2px;cursor:pointer;background:linear-gradient(to right,var(--p400) 0%,var(--p400) var(--pct,40%),var(--g100) var(--pct,40%),var(--g100) 100%);outline:none}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:var(--p400);border:3px solid var(--card);box-shadow:0 0 0 1.5px var(--p400);cursor:pointer}
+input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:var(--p400);border:3px solid var(--card);cursor:pointer}
+.score-badge{min-width:44px;height:44px;border-radius:10px;background:var(--p50);color:var(--p600);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;flex-shrink:0;transition:background .2s,color .2s}
+.score-badge.high{background:var(--t50);color:var(--t600)}
+.score-badge.mid{background:var(--a50);color:var(--a600)}
+.score-badge.low{background:var(--c50);color:var(--c400)}
+
+/* NAME ROW */
+.name-row{background:var(--card);border:1px solid var(--border);border-radius:var(--rlg);padding:1.25rem 1.5rem;margin-bottom:1.5rem;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.name-row label{font-size:14px;font-weight:500;white-space:nowrap}
+.name-row input[type=text],.dept-row input[type=text]{flex:1;min-width:160px;font-size:15px;background:var(--g50);border:1px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--text);font-family:inherit;outline:none}
+.name-row input[type=text]:focus,.dept-row input[type=text]:focus{border-color:var(--p400)}
+
+/* PROGRESS */
+.progress-wrap{position:sticky;top:0;z-index:100;background:var(--bg);padding:8px 0 12px;border-bottom:1px solid var(--border);margin-bottom:2rem;display:none}
+.progress-track{height:3px;background:var(--g50);border-radius:2px;overflow:hidden}
+.progress-fill{height:100%;background:var(--p400);border-radius:2px;transition:width .4s ease}
+.progress-label{font-size:12px;color:var(--muted);display:flex;justify-content:space-between;margin-bottom:6px}
+
+/* CTA */
+.cta-wrap{text-align:center;margin:3rem 0 0}
+.cta-btn{background:var(--p400);color:#fff;border:none;border-radius:var(--rlg);padding:16px 40px;font-size:17px;font-weight:500;cursor:pointer;font-family:inherit;transition:background .2s,transform .15s}
+.cta-btn:hover{background:var(--p600)}
+.cta-btn:active{transform:scale(.97)}
+
+/* RESULT */
+.result-hero{text-align:center;padding:2rem 0 1.5rem}
+.score-ring{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;width:120px;height:120px;border-radius:50%;border:4px solid var(--p400);margin:0 auto 1rem}
+.score-ring .big{font-size:32px;font-weight:700;color:var(--p400);line-height:1}
+.score-ring .lbl{font-size:11px;color:var(--muted);margin-top:2px}
+.result-hero h3{font-size:22px;font-weight:700;margin-bottom:.5rem}
+.result-hero p{font-size:15px;color:var(--muted)}
+.radar-card{background:var(--card);border:1px solid var(--border);border-radius:var(--rlg);padding:2rem;margin-bottom:1.5rem;display:flex;align-items:center;justify-content:center}
+.score-table-card{background:var(--card);border:1px solid var(--border);border-radius:var(--rlg);overflow:hidden;margin-bottom:1.5rem}
+.score-table-card table{width:100%;border-collapse:collapse}
+.score-table-card th{font-size:12px;font-weight:500;color:var(--muted);background:var(--g50);padding:10px 16px;text-align:left;border-bottom:1px solid var(--border)}
+.score-table-card td{padding:12px 16px;border-bottom:1px solid var(--border);font-size:14px}
+.score-table-card tr:last-child td{border-bottom:none}
+.mini-bar-bg{height:6px;border-radius:3px;background:var(--g50);overflow:hidden}
+.mini-bar-fill{height:100%;border-radius:3px;transition:width .8s ease}
+.rec-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px;margin-top:1rem}
+.rec-card{background:var(--card);border:1px solid var(--border);border-radius:var(--rlg);padding:1.25rem;position:relative}
+.rec-pri{position:absolute;top:12px;right:12px;font-size:11px;font-weight:500;padding:3px 8px;border-radius:100px}
+.pri-high{background:var(--c50);color:var(--c400)}
+.pri-mid{background:var(--a50);color:var(--a600)}
+.rec-icon{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;margin-bottom:10px}
+.rec-title{font-size:15px;font-weight:500;margin-bottom:4px}
+.rec-score{font-size:12px;color:var(--muted)}
+.rec-score span{color:var(--c400);font-weight:500}
+.action-row{display:flex;gap:12px;flex-wrap:wrap;margin-top:2rem;justify-content:center}
+.action-btn{background:var(--g50);color:var(--g800);border:1px solid var(--border);border-radius:var(--rmd);padding:12px 24px;font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:8px;transition:background .2s}
+.action-btn:hover{background:var(--p50);color:var(--p600);border-color:var(--p200)}
+.action-btn svg{width:16px;height:16px;flex-shrink:0}
+.retake-btn{background:none;border:1px solid var(--border);border-radius:var(--rmd);padding:12px 24px;font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;color:var(--muted);transition:all .2s}
+.retake-btn:hover{border-color:var(--p400);color:var(--p400)}
+.divider{height:1px;background:var(--border);margin:2rem 0}
+
+/* ── ADMIN ── */
+.admin-login{background:var(--card);border:1px solid var(--border);border-radius:var(--rlg);padding:2rem;max-width:400px;margin:2rem auto}
+.admin-login h3{font-size:18px;font-weight:700;margin-bottom:.5rem}
+.admin-login p{font-size:14px;color:var(--muted);margin-bottom:1.5rem}
+.admin-login input[type=password]{width:100%;font-size:15px;background:var(--g50);border:1px solid var(--border);border-radius:8px;padding:12px 14px;color:var(--text);font-family:inherit;outline:none;margin-bottom:12px}
+.admin-login input[type=password]:focus{border-color:var(--p400)}
+.admin-login button{width:100%;background:var(--p400);color:#fff;border:none;border-radius:10px;padding:13px;font-size:15px;font-weight:500;cursor:pointer;font-family:inherit}
+.admin-login button:hover{background:var(--p600)}
+#login-err{font-size:13px;color:var(--c400);margin-top:6px;display:none}
+
+/* STAT GRID */
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:2rem}
+.stat-card{background:var(--g50);border-radius:var(--rmd);padding:1rem}
+.stat-lbl{font-size:12px;color:var(--muted);margin-bottom:6px}
+.stat-val{font-size:26px;font-weight:700;color:var(--p400);line-height:1}
+.stat-sub{font-size:12px;color:var(--muted);margin-top:4px}
+
+/* ADMIN CHARTS */
+.chart-card{background:var(--card);border:1px solid var(--border);border-radius:var(--rlg);padding:1.5rem;margin-bottom:1.5rem}
+.chart-card h4{font-size:15px;font-weight:500;margin-bottom:1.25rem;color:var(--text)}
+.bar-chart-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.bar-chart-label{width:90px;font-size:13px;color:var(--muted);text-align:right;white-space:nowrap;flex-shrink:0}
+.bar-chart-bar-bg{flex:1;height:20px;background:var(--g50);border-radius:4px;overflow:hidden;position:relative}
+.bar-chart-bar-fill{height:100%;border-radius:4px;transition:width .8s ease;min-width:2px}
+.bar-chart-val{width:36px;font-size:13px;font-weight:500;color:var(--text);flex-shrink:0}
+.bar-chart-count{width:40px;font-size:12px;color:var(--muted);flex-shrink:0}
+
+/* PEOPLE TABLE */
+.people-table-wrap{background:var(--card);border:1px solid var(--border);border-radius:var(--rlg);overflow:hidden;margin-bottom:1.5rem}
+.people-table-wrap table{width:100%;border-collapse:collapse;font-size:13px;min-width:600px}
+.people-table-wrap th{font-size:11px;font-weight:500;color:var(--muted);background:var(--g50);padding:10px 12px;text-align:left;border-bottom:1px solid var(--border);white-space:nowrap}
+.people-table-wrap td{padding:10px 12px;border-bottom:1px solid var(--border);vertical-align:middle}
+.people-table-wrap tr:last-child td{border-bottom:none}
+.people-table-wrap tr:hover td{background:var(--g50)}
+.tbl-scroll{overflow-x:auto}
+.chip{display:inline-block;font-size:11px;padding:2px 8px;border-radius:100px;font-weight:500}
+.chip-high{background:var(--t50);color:var(--t600)}
+.chip-mid{background:var(--a50);color:var(--a600)}
+.chip-low{background:var(--c50);color:var(--c400)}
+
+/* DEMAND CHART */
+.demand-item{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.demand-icon{width:28px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.demand-name{width:80px;font-size:13px;color:var(--muted);flex-shrink:0}
+.demand-bar-bg{flex:1;height:16px;background:var(--g50);border-radius:3px;overflow:hidden}
+.demand-bar-fill{height:100%;border-radius:3px;transition:width .8s ease}
+.demand-cnt{width:40px;font-size:13px;font-weight:500;color:var(--text);flex-shrink:0}
+.demand-badge{font-size:11px;padding:2px 7px;border-radius:100px;flex-shrink:0}
+
+/* NOTICE */
+.notice{background:var(--b50);border:1px solid var(--border);border-radius:var(--rmd);padding:1rem 1.25rem;margin-bottom:1.5rem;font-size:13px;color:var(--muted);line-height:1.7}
+.notice strong{color:var(--b600)}
+
+/* ADMIN ACTIONS */
+.admin-actions{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:1.5rem;align-items:center}
+.del-btn{background:none;border:1px solid var(--border);border-radius:8px;padding:8px 16px;font-size:13px;color:var(--c400);cursor:pointer;font-family:inherit}
+.del-btn:hover{background:var(--c50);border-color:var(--c400)}
+.filter-wrap{display:flex;gap:8px;align-items:center;margin-left:auto;flex-wrap:wrap}
+.filter-wrap select{font-size:13px;background:var(--g50);border:1px solid var(--border);border-radius:8px;padding:8px 12px;color:var(--text);font-family:inherit;outline:none;cursor:pointer}
+.badge-submitted{display:inline-block;background:var(--t50);color:var(--t600);font-size:12px;font-weight:500;padding:3px 10px;border-radius:100px;margin-left:8px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="site-header">
+  <div class="logo-dot">
+    <svg viewBox="0 0 24 24"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/></svg>
+  </div>
+  <h1>팀장 역량 진단 <span id="admin-badge"></span></h1>
+</header>
+
+<!-- NAV TABS -->
+<div class="nav-tabs">
+  <button class="nav-tab active" onclick="switchTab('survey')">📋 역량 진단</button>
+  <button class="nav-tab" onclick="switchTab('myresult')">📊 내 결과</button>
+  <button class="nav-tab" onclick="switchTab('admin')">🔒 관리자</button>
+</div>
+
+<!-- ══════════════════ PAGE: SURVEY ══════════════════ -->
+<div class="page visible" id="page-survey">
+  <section class="hero">
+    <span class="eyebrow">SELF ASSESSMENT TOOL</span>
+    <h2>나의 팀장 역량,<br>지금 어느 수준일까?</h2>
+    <p>솔직하게 답할수록 딱 맞는 교육을 추천받을 수 있어요. 9가지 핵심 역량을 점수로 표시하면 결과와 맞춤 교육 과정을 바로 확인할 수 있습니다.</p>
+    <div class="hero-meta">
+      <span class="meta-item"><span class="meta-dot"></span> 소요 시간 약 5분</span>
+      <span class="meta-item"><span class="meta-dot"></span> 9가지 역량 영역</span>
+      <span class="meta-item"><span class="meta-dot"></span> 결과 자동 저장</span>
+    </div>
+  </section>
+
+  <div class="info-card">
+    <div class="info-header"><div class="info-icon">💡</div><span>점수 기준 안내</span></div>
+    <div class="scale-guide">
+      <div class="scale-item"><span class="scale-num">1</span><span class="scale-label">거의 모름·경험 없음</span></div>
+      <div class="scale-item"><span class="scale-num">2</span><span class="scale-label">기초 수준 인지</span></div>
+      <div class="scale-item"><span class="scale-num">3</span><span class="scale-label">부분적 활용 가능</span></div>
+      <div class="scale-item"><span class="scale-num">4</span><span class="scale-label">실무에서 활용 중</span></div>
+      <div class="scale-item"><span class="scale-num">5</span><span class="scale-label">자신 있고 잘함</span></div>
+    </div>
+  </div>
+
+  <div class="progress-wrap" id="progress-wrap">
+    <div class="progress-label"><span>진행 중 — 9가지 역량을 모두 평가해주세요</span><span id="prog-pct">9/9</span></div>
+    <div class="progress-track"><div class="progress-fill" id="prog-fill" style="width:100%"></div></div>
+  </div>
+
+  <div class="name-row" id="name-row">
+    <label for="user-name">👤 이름</label>
+    <input type="text" id="user-name" placeholder="홍길동 팀장" />
+    <label for="user-dept" style="white-space:nowrap;font-size:14px;font-weight:500">🏢 소속</label>
+    <input type="text" id="user-dept" placeholder="영업1팀" style="flex:1;min-width:120px;font-size:15px;background:var(--g50);border:1px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--text);font-family:inherit;outline:none" />
+  </div>
+
+  <div class="sec-label">역량 자가진단</div>
+  <div id="skill-cards"></div>
+
+  <div class="cta-wrap">
+    <button class="cta-btn" onclick="submitSurvey()">결과 확인 및 제출하기 →</button>
+  </div>
+</div>
+
+<!-- ══════════════════ PAGE: MY RESULT ══════════════════ -->
+<div class="page" id="page-myresult">
+  <div id="no-result" style="text-align:center;padding:4rem 0;color:var(--muted)">
+    <div style="font-size:48px;margin-bottom:1rem">📋</div>
+    <p style="font-size:16px">아직 진단을 완료하지 않았어요.<br>역량 진단 탭에서 먼저 진단을 완료해주세요.</p>
+  </div>
+  <div id="result-content" style="display:none">
+    <div class="result-hero">
+      <div class="score-ring"><span class="big" id="avg-score">-</span><span class="lbl">평균 점수</span></div>
+      <h3 id="result-title"></h3>
+      <p id="result-desc"></p>
+    </div>
+    <div class="divider"></div>
+    <div class="sec-label">역량 레이더 차트</div>
+    <div class="radar-card"><canvas id="radar" width="520" height="420"></canvas></div>
+    <div class="sec-label">영역별 점수</div>
+    <div class="score-table-card">
+      <table><thead><tr><th>역량 영역</th><th>점수</th><th style="width:40%">수준</th></tr></thead>
+      <tbody id="score-tbody"></tbody></table>
+    </div>
+    <div class="sec-label">추천 교육 과정</div>
+    <p style="font-size:14px;color:var(--muted);margin-bottom:1rem">점수가 낮은 영역을 중심으로 맞춤 교육 과정을 추천드립니다.</p>
+    <div class="rec-grid" id="rec-grid"></div>
+    <div class="action-row">
+      <button class="action-btn" onclick="downloadTxt()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7,10 12,15 17,10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        결과 저장
+      </button>
+      <button class="action-btn" onclick="printResult()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6,9 6,2 18,2 18,9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+        인쇄 / PDF
+      </button>
+      <button class="retake-btn" onclick="retake()">다시 진단하기</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════ PAGE: ADMIN ══════════════════ -->
+<div class="page" id="page-admin">
+
+  <!-- LOGIN GATE -->
+  <div id="admin-login-wrap">
+    <div class="admin-login">
+      <div style="font-size:32px;margin-bottom:1rem;text-align:center">🔒</div>
+      <h3 style="text-align:center">관리자 로그인</h3>
+      <p style="text-align:center">관리자 비밀번호를 입력하세요.<br><span style="font-size:12px">기본값: <code>admin1234</code> — HTML 파일 내 변경 가능</span></p>
+      <input type="password" id="admin-pw" placeholder="비밀번호" onkeydown="if(event.key==='Enter')adminLogin()" />
+      <button onclick="adminLogin()">로그인</button>
+      <p id="login-err" style="font-size:13px;color:var(--c400);margin-top:8px;display:none">비밀번호가 올바르지 않습니다.</p>
+    </div>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div id="admin-dashboard" style="display:none">
+    <div class="notice">
+      <strong>⚠️ 데이터 저장 방식 안내</strong><br>
+      현재 결과는 각 기기의 브라우저 로컬 스토리지에 저장됩니다. <strong>같은 기기·같은 브라우저</strong>에서 진단한 결과만 취합됩니다. 사내 전체 배포 시에는 Google Sheets 연동 또는 사내 서버 DB 저장 방식으로 업그레이드를 권장합니다.
+    </div>
+
+    <div id="admin-stat-grid" class="stat-grid"></div>
+
+    <div class="admin-actions">
+      <button class="action-btn" onclick="exportCSV()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7,10 12,15 17,10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        CSV 내보내기
+      </button>
+      <button class="action-btn" onclick="exportExcelStyle()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 3v18"/></svg>
+        엑셀 형식 다운로드
+      </button>
+      <div class="filter-wrap">
+        <label style="font-size:13px;color:var(--muted)">필터:</label>
+        <select id="filter-dept" onchange="renderAdminDashboard()">
+          <option value="">전체 소속</option>
+        </select>
+        <select id="filter-score" onchange="renderAdminDashboard()">
+          <option value="">전체 점수</option>
+          <option value="high">4점 이상</option>
+          <option value="mid">3~3.9점</option>
+          <option value="low">3점 미만</option>
+        </select>
+      </div>
+      <button class="del-btn" onclick="clearAllData()">🗑 전체 삭제</button>
+    </div>
+
+    <!-- 통계 카드 & 차트 영역 -->
+    <div class="sec-label">역량별 평균 점수</div>
+    <div class="chart-card" id="avg-bar-chart"><p style="color:var(--muted);font-size:14px">데이터 없음</p></div>
+
+    <div class="sec-label">교육 과정별 수요 (3점 이하 인원)</div>
+    <div class="chart-card" id="demand-chart"><p style="color:var(--muted);font-size:14px">데이터 없음</p></div>
+
+    <div class="sec-label">팀장별 진단 결과</div>
+    <div class="tbl-scroll">
+      <div class="people-table-wrap"><table id="people-table">
+        <thead><tr>
+          <th>이름</th><th>소속</th><th>평균</th>
+          <th>코칭</th><th>협상</th><th>AI활용</th><th>기획</th><th>손익관리</th>
+          <th>글로벌어학</th><th>트렌드</th><th>문화예술</th><th>감도개선</th>
+          <th>진단일</th>
+        </tr></thead>
+        <tbody id="people-tbody"></tbody>
+      </table></div>
+    </div>
+
+  </div>
+</div>
+
+</div><!-- /wrap -->
+
+<script>
+/* ═══════════════ DATA ═══════════════ */
+const ADMIN_PW = 'admin1234'; // ← 여기서 비밀번호 변경
+const STORAGE_KEY = 'tl_assessments_v2';
+const SKILLS = [
+  {id:'coaching',  name:'코칭',     icon:'🎯', color:['#7F77DD','#EEEDFE'], course:'팀장 코칭 스킬 심화과정'},
+  {id:'negot',     name:'협상',     icon:'🤝', color:['#1D9E75','#E1F5EE'], course:'비즈니스 협상 실전과정'},
+  {id:'ai',        name:'AI 활용',  icon:'🤖', color:['#378ADD','#E6F1FB'], course:'AI 도구 업무 활용 워크숍'},
+  {id:'planning',  name:'기획',     icon:'📐', color:['#BA7517','#FAEEDA'], course:'전략적 기획력 강화과정'},
+  {id:'pnl',       name:'손익관리', icon:'📊', color:['#639922','#EAF3DE'], course:'팀장을 위한 재무·손익 이해과정'},
+  {id:'global',    name:'글로벌어학',icon:'🌐',color:['#D85A30','#FAECE7'], course:'비즈니스 글로벌 어학 집중과정'},
+  {id:'trend',     name:'트렌드',   icon:'📡', color:['#534AB7','#EEEDFE'], course:'비즈니스 트렌드 리딩과정'},
+  {id:'culture',   name:'문화예술', icon:'🎨', color:['#D4537E','#FBEAF0'], course:'리더를 위한 문화예술 인문학과정'},
+  {id:'eq',        name:'감도개선', icon:'✨', color:['#0F6E56','#E1F5EE'], course:'리더 감성 지능(EQ) 강화과정'},
+];
+const SKILL_DESCS = {
+  coaching:'팀원 성장을 이끄는 질문·피드백·동기부여 역량',
+  negot:'이해관계자와 이견을 조율하고 합의를 이끌어내는 역량',
+  ai:'업무에서 AI 도구를 활용해 생산성을 높이는 역량',
+  planning:'전략적 사고로 사업·업무 계획을 설계하는 역량',
+  pnl:'팀 단위 수익·비용을 이해하고 성과 지표를 관리하는 역량',
+  global:'영어 또는 제2외국어로 업무 커뮤니케이션하는 역량',
+  trend:'산업·사회 변화 흐름을 읽고 팀 전략에 연결하는 역량',
+  culture:'인문학·예술적 감각으로 리더십과 창의성을 확장하는 역량',
+  eq:'공감·감성 지능으로 팀 분위기와 관계를 이끄는 역량',
+};
+const SKILL_EX = {
+  coaching:'1:1 면담, 성과 피드백, OJT 설계',
+  negot:'사내 협업 조율, 예산 협의, 파트너사 협상',
+  ai:'ChatGPT/Claude 프롬프트, 데이터 분석 AI, 자동화',
+  planning:'사업 기획서 작성, 프로젝트 플래닝, 의사결정 구조화',
+  pnl:'예산 편성, P&L 분석, KPI 설정, 원가 구조 이해',
+  global:'영문 이메일, 글로벌 회의 참여, 비즈니스 프레젠테이션',
+  trend:'메가트렌드 리포트 분석, 시장 변화 모니터링',
+  culture:'예술 감상 소양, 스토리텔링, 인문학적 통찰 활용',
+  eq:'EQ 리더십, 심리적 안전감 조성, 조직 감수성 향상',
+};
+
+let scores = {};
+let myResult = null;
+
+/* ═══════════════ INIT SURVEY CARDS ═══════════════ */
+function initCards(){
+  const c = document.getElementById('skill-cards');
+  c.innerHTML = '';
+  SKILLS.forEach((s,i)=>{
+    const def = 3; scores[s.id] = def;
+    c.innerHTML += `<div class="skill-card" id="card-${s.id}">
+      <div class="skill-header">
+        <div class="skill-icon-wrap" style="background:${s.color[1]}">${s.icon}</div>
+        <div>
+          <div class="skill-title">${i+1}. ${s.name}</div>
+          <div class="skill-desc">${SKILL_DESCS[s.id]}</div>
+          <div class="skill-ex">예시: ${SKILL_EX[s.id]}</div>
+        </div>
+      </div>
+      <div class="slider-labels"><span>1 — 잘 모름</span><span>5 — 자신 있음</span></div>
+      <div class="slider-row">
+        <div class="slider-wrap">
+          <input type="range" min="1" max="5" step="1" value="${def}"
+            id="range-${s.id}" style="--pct:${(def-1)/4*100}%"
+            oninput="updateScore('${s.id}',this.value)" />
+        </div>
+        <div class="score-badge mid" id="badge-${s.id}">${def}</div>
+      </div>
+    </div>`;
+  });
+  document.getElementById('progress-wrap').style.display = 'block';
+}
+function updateScore(id,val){
+  scores[id]=parseInt(val);
+  const b=document.getElementById('badge-'+id), r=document.getElementById('range-'+id);
+  b.textContent=val;
+  r.style.setProperty('--pct',(val-1)/4*100+'%');
+  b.className='score-badge'+(val>=4?' high':val==3?' mid':' low');
+}
+
+/* ═══════════════ SUBMIT / SAVE ═══════════════ */
+function submitSurvey(){
+  const name=document.getElementById('user-name').value.trim()||'익명';
+  const dept=document.getElementById('user-dept').value.trim()||'미입력';
+  const avg=(Object.values(scores).reduce((a,b)=>a+b,0)/SKILLS.length);
+  const entry={
+    id: Date.now(),
+    name, dept,
+    scores:{...scores},
+    avg: parseFloat(avg.toFixed(2)),
+    date: new Date().toLocaleDateString('ko-KR')
+  };
+  // save to localStorage
+  const all = loadAll();
+  // overwrite if same name+dept (re-submit)
+  const idx = all.findIndex(e=>e.name===name&&e.dept===dept);
+  if(idx>=0) all[idx]=entry; else all.push(entry);
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(all));
+  myResult = entry;
+  renderMyResult();
+  switchTab('myresult');
+}
+
+/* ═══════════════ MY RESULT ═══════════════ */
+function renderMyResult(){
+  if(!myResult){ document.getElementById('no-result').style.display='block'; document.getElementById('result-content').style.display='none'; return; }
+  document.getElementById('no-result').style.display='none';
+  document.getElementById('result-content').style.display='block';
+  const avg=myResult.avg.toFixed(1);
+  document.getElementById('avg-score').textContent=avg;
+  const msgs=[
+    [4.5,'탁월한 리더십 역량','이미 높은 수준의 팀장 역량을 보유하고 있습니다. 취약 영역을 보완해 완성도를 높여보세요.'],
+    [3.5,'균형 잡힌 성장 단계','전반적으로 안정적인 역량을 가지고 있습니다. 집중 개발이 필요한 영역에 에너지를 쏟아보세요.'],
+    [2.5,'성장 가능성이 풍부','개발할 역량이 많습니다. 우선순위를 정해 단계적으로 성장해보세요.'],
+    [0,'지금이 역량 투자의 적기','기초부터 차근차근 쌓아가면 됩니다. 교육 과정을 통해 빠르게 성장할 수 있어요.']
+  ];
+  const [,t,d]=msgs.find(([v])=>avg>=v)||msgs[3];
+  document.getElementById('result-title').textContent=t;
+  document.getElementById('result-desc').textContent=`${myResult.name}님, `+d;
+  renderScoreTable();
+  renderRecCards();
+  setTimeout(()=>drawRadar(),120);
+}
+function renderScoreTable(){
+  const sorted=[...SKILLS].sort((a,b)=>myResult.scores[a.id]-myResult.scores[b.id]);
+  document.getElementById('score-tbody').innerHTML=sorted.map(s=>{
+    const sc=myResult.scores[s.id], pct=(sc-1)/4*100;
+    const col=sc>=4?'#1D9E75':sc>=3?'#BA7517':'#D85A30';
+    const lbl=sc>=4?'우수':sc>=3?'보통':'집중 개발 필요';
+    return`<tr><td>${s.icon} ${s.name}</td><td><strong>${sc}</strong>/5</td>
+    <td><div class="mini-bar-bg"><div class="mini-bar-fill" style="width:${pct}%;background:${col}"></div></div>
+    <div style="font-size:11px;color:var(--muted);margin-top:3px">${lbl}</div></td></tr>`;
+  }).join('');
+}
+function renderRecCards(){
+  const sorted=[...SKILLS].sort((a,b)=>myResult.scores[a.id]-myResult.scores[b.id])
+    .filter(s=>myResult.scores[s.id]<=3).slice(0,6);
+  if(!sorted.length){document.getElementById('rec-grid').innerHTML='<p style="color:var(--muted);font-size:14px">모든 역량이 4점 이상입니다! 심화 과정을 검토해보세요. 🎉</p>';return;}
+  document.getElementById('rec-grid').innerHTML=sorted.map(s=>{
+    const sc=myResult.scores[s.id], hi=sc<=2;
+    return`<div class="rec-card">
+      <span class="rec-pri ${hi?'pri-high':'pri-mid'}">${hi?'🔥 집중 추천':'추천'}</span>
+      <div class="rec-icon" style="background:${s.color[1]}">${s.icon}</div>
+      <div class="rec-title">${s.course}</div>
+      <div class="rec-score">현재 <span>${s.name} ${sc}점</span> → 목표 4점↑</div>
+    </div>`;
+  }).join('');
+}
+function drawRadar(){
+  const cv=document.getElementById('radar'), ctx=cv.getContext('2d');
+  const W=cv.width,H=cv.height,cx=W/2,cy=H/2+10,R=Math.min(W,H)*.35,n=SKILLS.length;
+  const dark=window.matchMedia('(prefers-color-scheme:dark)').matches;
+  const gc=dark?'rgba(255,255,255,.08)':'rgba(0,0,0,.07)';
+  const lc=dark?'#B4B2A9':'#5F5E5A';
+  ctx.clearRect(0,0,W,H);
+  const ang=i=>(Math.PI*2*i/n)-Math.PI/2;
+  for(let r=1;r<=5;r++){
+    ctx.beginPath();
+    SKILLS.forEach((s,i)=>{const a=ang(i),rv=R*r/5;i===0?ctx.moveTo(cx+rv*Math.cos(a),cy+rv*Math.sin(a)):ctx.lineTo(cx+rv*Math.cos(a),cy+rv*Math.sin(a))});
+    ctx.closePath();ctx.strokeStyle=gc;ctx.lineWidth=1;ctx.stroke();
+  }
+  SKILLS.forEach((_,i)=>{const a=ang(i);ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(cx+R*Math.cos(a),cy+R*Math.sin(a));ctx.strokeStyle=gc;ctx.lineWidth=1;ctx.stroke()});
+  ctx.beginPath();
+  SKILLS.forEach((s,i)=>{const a=ang(i),rv=R*myResult.scores[s.id]/5;i===0?ctx.moveTo(cx+rv*Math.cos(a),cy+rv*Math.sin(a)):ctx.lineTo(cx+rv*Math.cos(a),cy+rv*Math.sin(a))});
+  ctx.closePath();ctx.fillStyle=dark?'rgba(127,119,221,.25)':'rgba(127,119,221,.18)';ctx.fill();
+  ctx.strokeStyle='#7F77DD';ctx.lineWidth=2;ctx.stroke();
+  SKILLS.forEach((s,i)=>{const a=ang(i),rv=R*myResult.scores[s.id]/5;ctx.beginPath();ctx.arc(cx+rv*Math.cos(a),cy+rv*Math.sin(a),5,0,Math.PI*2);ctx.fillStyle='#7F77DD';ctx.fill()});
+  ctx.font='500 13px Noto Sans KR,sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
+  SKILLS.forEach((s,i)=>{const a=ang(i),lr=R+30;ctx.fillStyle=lc;ctx.fillText(s.icon+' '+s.name,cx+lr*Math.cos(a),cy+lr*Math.sin(a))});
+}
+
+/* ═══════════════ STORAGE HELPERS ═══════════════ */
+function loadAll(){
+  try{return JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]')}catch{return[]}
+}
+function getFiltered(){
+  let data=loadAll();
+  const dept=document.getElementById('filter-dept')?.value||'';
+  const sc=document.getElementById('filter-score')?.value||'';
+  if(dept) data=data.filter(e=>e.dept===dept);
+  if(sc==='high') data=data.filter(e=>e.avg>=4);
+  else if(sc==='mid') data=data.filter(e=>e.avg>=3&&e.avg<4);
+  else if(sc==='low') data=data.filter(e=>e.avg<3);
+  return data;
+}
+
+/* ═══════════════ ADMIN ═══════════════ */
+let adminAuthed=false;
+function adminLogin(){
+  const pw=document.getElementById('admin-pw').value;
+  if(pw===ADMIN_PW){
+    adminAuthed=true;
+    document.getElementById('admin-login-wrap').style.display='none';
+    document.getElementById('admin-dashboard').style.display='block';
+    document.getElementById('admin-badge').innerHTML='<span class="badge-submitted">관리자 모드</span>';
+    renderAdminDashboard();
+  } else {
+    document.getElementById('login-err').style.display='block';
+  }
+}
+function renderAdminDashboard(){
+  const all=loadAll();
+  const data=getFiltered();
+  // update dept filter options
+  const depts=[...new Set(all.map(e=>e.dept))].filter(Boolean);
+  const dsel=document.getElementById('filter-dept');
+  const curDept=dsel.value;
+  dsel.innerHTML='<option value="">전체 소속</option>'+depts.map(d=>`<option value="${d}"${d===curDept?' selected':''}>${d}</option>`).join('');
+
+  // STAT CARDS
+  const total=data.length;
+  const avgAll=total?+(data.reduce((s,e)=>s+e.avg,0)/total).toFixed(1):0;
+  const low=data.filter(e=>e.avg<3).length;
+  const hi=data.filter(e=>e.avg>=4).length;
+  document.getElementById('admin-stat-grid').innerHTML=`
+    <div class="stat-card"><div class="stat-lbl">진단 완료 인원</div><div class="stat-val">${total}</div><div class="stat-sub">명</div></div>
+    <div class="stat-card"><div class="stat-lbl">전체 평균 점수</div><div class="stat-val">${avgAll}</div><div class="stat-sub">/ 5점</div></div>
+    <div class="stat-card"><div class="stat-lbl">집중 관리 대상</div><div class="stat-val" style="color:var(--c400)">${low}</div><div class="stat-sub">명 (3점 미만)</div></div>
+    <div class="stat-card"><div class="stat-lbl">우수 역량 보유</div><div class="stat-val" style="color:var(--t400)">${hi}</div><div class="stat-sub">명 (4점 이상)</div></div>`;
+
+  // AVG BAR CHART
+  if(!total){ document.getElementById('avg-bar-chart').innerHTML='<p style="color:var(--muted);font-size:14px">진단 데이터가 없습니다.</p>'; }
+  else {
+    const avgs=SKILLS.map(s=>({s,v:+(data.reduce((a,e)=>a+e.scores[s.id],0)/total).toFixed(2)}));
+    avgs.sort((a,b)=>a.v-b.v);
+    document.getElementById('avg-bar-chart').innerHTML='<h4>역량별 평균 점수 (낮은 순)</h4>'+
+      avgs.map(({s,v})=>{
+        const pct=v/5*100;
+        const col=v>=4?'#1D9E75':v>=3?'#BA7517':'#D85A30';
+        return`<div class="bar-chart-row">
+          <div class="bar-chart-label">${s.icon} ${s.name}</div>
+          <div class="bar-chart-bar-bg"><div class="bar-chart-bar-fill" style="width:${pct}%;background:${col}"></div></div>
+          <div class="bar-chart-val">${v}</div>
+        </div>`;
+      }).join('');
+  }
+
+  // DEMAND CHART
+  if(!total){ document.getElementById('demand-chart').innerHTML='<p style="color:var(--muted);font-size:14px">진단 데이터가 없습니다.</p>'; }
+  else {
+    const demand=SKILLS.map(s=>({s,cnt:data.filter(e=>e.scores[s.id]<=3).length}));
+    demand.sort((a,b)=>b.cnt-a.cnt);
+    const max=Math.max(...demand.map(d=>d.cnt),1);
+    document.getElementById('demand-chart').innerHTML='<h4>교육 수요 (3점 이하 인원 수)</h4>'+
+      demand.map(({s,cnt})=>{
+        const pct=cnt/max*100;
+        const urg=cnt>=total*.6?'🔥 긴급':'';
+        return`<div class="demand-item">
+          <div class="demand-icon" style="background:${s.color[1]}">${s.icon}</div>
+          <div class="demand-name">${s.name}</div>
+          <div class="demand-bar-bg"><div class="demand-bar-fill" style="width:${pct}%;background:${s.color[0]}"></div></div>
+          <div class="demand-cnt">${cnt}명</div>
+          ${urg?`<span class="demand-badge" style="background:var(--c50);color:var(--c400)">${urg}</span>`:''}
+        </div>`;
+      }).join('');
+  }
+
+  // PEOPLE TABLE
+  const tbody=document.getElementById('people-tbody');
+  if(!total){ tbody.innerHTML='<tr><td colspan="13" style="text-align:center;padding:2rem;color:var(--muted)">진단 데이터가 없습니다.</td></tr>'; }
+  else {
+    const sorted=[...data].sort((a,b)=>a.avg-b.avg);
+    tbody.innerHTML=sorted.map(e=>{
+      const chip=e.avg>=4?'chip-high':e.avg>=3?'chip-mid':'chip-low';
+      const lbl=e.avg>=4?'우수':e.avg>=3?'보통':'관리 필요';
+      return`<tr>
+        <td><strong>${e.name}</strong></td>
+        <td>${e.dept}</td>
+        <td><span class="chip ${chip}">${e.avg} ${lbl}</span></td>
+        ${SKILLS.map(s=>{const v=e.scores[s.id];const cc=v>=4?'color:var(--t400)':v<=2?'color:var(--c400)':'';return`<td style="${cc}">${v}</td>`}).join('')}
+        <td style="color:var(--muted);font-size:12px">${e.date}</td>
+      </tr>`;
+    }).join('');
+  }
+}
+
+/* ═══════════════ EXPORT ═══════════════ */
+function exportCSV(){
+  const data=getFiltered();
+  if(!data.length){alert('내보낼 데이터가 없습니다.');return;}
+  const header=['이름','소속','평균점수',...SKILLS.map(s=>s.name),'진단일'].join(',');
+  const rows=data.map(e=>[
+    `"${e.name}"`,`"${e.dept}"`,e.avg,
+    ...SKILLS.map(s=>e.scores[s.id]),
+    `"${e.date}"`
+  ].join(','));
+  const bom='\uFEFF';
+  const csv=bom+[header,...rows].join('\n');
+  const a=document.createElement('a');
+  a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);
+  a.download=`팀장역량진단_${new Date().toLocaleDateString('ko-KR').replace(/\./g,'-')}.csv`;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+}
+function exportExcelStyle(){
+  const data=getFiltered();
+  if(!data.length){alert('내보낼 데이터가 없습니다.');return;}
+  const header=['이름','소속','평균점수',...SKILLS.map(s=>s.name),'진단일'];
+  const rows=data.map(e=>[e.name,e.dept,e.avg,...SKILLS.map(s=>e.scores[s.id]),e.date]);
+  const bom='\uFEFF';
+  const txt=bom+header.join('\t')+'\n'+rows.map(r=>r.join('\t')).join('\n');
+  const a=document.createElement('a');
+  a.href='data:text/tab-separated-values;charset=utf-8,'+encodeURIComponent(txt);
+  a.download=`팀장역량진단_${new Date().toLocaleDateString('ko-KR').replace(/\./g,'-')}.xls`;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+}
+function clearAllData(){
+  if(!confirm('모든 진단 데이터를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.'))return;
+  localStorage.removeItem(STORAGE_KEY);
+  renderAdminDashboard();
+}
+
+/* ═══════════════ MISC ═══════════════ */
+function downloadTxt(){
+  if(!myResult)return;
+  let txt=`[ 팀장 역량 진단 결과 ]\n이름: ${myResult.name}  소속: ${myResult.dept}  평균: ${myResult.avg}/5\n진단일: ${myResult.date}\n\n━━ 영역별 점수 ━━\n`;
+  SKILLS.forEach(s=>{const v=myResult.scores[s.id];txt+=`${s.icon} ${s.name.padEnd(8)} ${'■'.repeat(v)}${'□'.repeat(5-v)}  ${v}점\n`});
+  txt+=`\n━━ 추천 교육 과정 ━━\n`;
+  SKILLS.filter(s=>myResult.scores[s.id]<=3).sort((a,b)=>myResult.scores[a.id]-myResult.scores[b.id]).slice(0,5)
+    .forEach(s=>{txt+=`• ${s.course}  (현재 ${myResult.scores[s.id]}점)\n`});
+  const a=document.createElement('a');
+  a.href='data:text/plain;charset=utf-8,'+encodeURIComponent(txt);
+  a.download=`역량진단_${myResult.name}_${myResult.date.replace(/\./g,'-')}.txt`;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+}
+function printResult(){
+  if(!myResult)return;
+  const rows=SKILLS.map(s=>{
+    const v=myResult.scores[s.id];
+    const bar='■'.repeat(v)+'□'.repeat(5-v);
+    const col=v>=4?'#1D9E75':v>=3?'#BA7517':'#D85A30';
+    return`<tr><td style="padding:8px 12px;border-bottom:1px solid #eee">${s.icon} ${s.name}</td>
+      <td style="padding:8px 12px;border-bottom:1px solid #eee;font-size:18px;letter-spacing:2px;color:${col}">${bar}</td>
+      <td style="padding:8px 12px;border-bottom:1px solid #eee;font-weight:700;color:${col}">${v} / 5</td></tr>`;
+  }).join('');
+  const recs=SKILLS.filter(s=>myResult.scores[s.id]<=3)
+    .sort((a,b)=>myResult.scores[a.id]-myResult.scores[b.id]).slice(0,5)
+    .map(s=>`<li style="margin-bottom:6px">${s.icon} <strong>${s.course}</strong> — 현재 ${myResult.scores[s.id]}점</li>`).join('');
+  const html=`<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8">
+  <title>역량진단_${myResult.name}</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap');
+    body{font-family:'Noto Sans KR',sans-serif;max-width:680px;margin:40px auto;color:#1A1918;font-size:15px;line-height:1.7}
+    h1{font-size:24px;font-weight:700;margin-bottom:4px}
+    .meta{color:#5F5E5A;font-size:13px;margin-bottom:32px}
+    .score-badge{display:inline-block;background:#EEEDFE;color:#534AB7;font-size:28px;font-weight:700;width:80px;height:80px;border-radius:50%;text-align:center;line-height:80px;margin-bottom:20px}
+    table{width:100%;border-collapse:collapse;margin-bottom:32px}
+    th{background:#F1EFE8;font-size:12px;font-weight:500;color:#5F5E5A;padding:10px 12px;text-align:left}
+    h2{font-size:16px;font-weight:700;margin:0 0 12px;padding-top:8px}
+    ul{padding-left:20px;color:#1A1918}
+    @media print{body{margin:20px}}
+  </style></head><body>
+  <h1>팀장 역량 진단 결과</h1>
+  <div class="meta">이름: ${myResult.name} &nbsp;|&nbsp; 소속: ${myResult.dept} &nbsp;|&nbsp; 진단일: ${myResult.date}</div>
+  <div class="score-badge">${myResult.avg}</div>
+  <h2>영역별 점수</h2>
+  <table><thead><tr><th>역량</th><th>그래프</th><th>점수</th></tr></thead><tbody>${rows}</tbody></table>
+  <h2>추천 교육 과정</h2>
+  <ul>${recs||'<li>모든 역량이 4점 이상입니다 🎉</li>'}</ul>
+  <script>window.onload=function(){window.print()}<\/script>
+  </body></html>`;
+  const w=window.open('','_blank','width=780,height=900');
+  if(w){w.document.write(html);w.document.close();}
+  else{alert('팝업이 차단되었습니다. 브라우저 팝업 허용 후 다시 시도해주세요.');}
+}
+function retake(){
+  myResult=null;
+  SKILLS.forEach(s=>{document.getElementById('range-'+s.id).value=3;updateScore(s.id,3)});
+  document.getElementById('user-name').value='';
+  document.getElementById('user-dept').value='';
+  switchTab('survey');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+/* ═══════════════ TAB SWITCH ═══════════════ */
+function switchTab(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('visible'));
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('visible');
+  const idx={survey:0,myresult:1,admin:2}[id];
+  document.querySelectorAll('.nav-tab')[idx].classList.add('active');
+  if(id==='myresult') renderMyResult();
+  if(id==='admin'&&adminAuthed) renderAdminDashboard();
+}
+
+/* ── BOOT ── */
+initCards();
+// restore prior result if any
+(function(){
+  const all=loadAll();
+  // check if previously submitted (last entry check removed — user must re-submit per session)
+})();
+</script>
+</body>
+</html>

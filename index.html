@@ -1,0 +1,1681 @@
+const GAS_URL  = 'https://script.google.com/macros/s/AKfycbyBu5lSyKwG9BbLrBULkrXJcNKHJ5smaYJj25dpxwsLKxMRBecc59bey6Ck2Lo9pLVs/exec';
+const ADMIN_PW = '6904';
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>팀장 리더십 진단</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════
+   TOKENS
+═══════════════════════════════════════ */
+:root {
+  --bg:       #0F0F14;
+  --surface:  #16161E;
+  --surface2: #1E1E2A;
+  --line:     rgba(255,255,255,.08);
+  --text:     #F0EEF8;
+  --muted:    #8A87A0;
+  --lav:      #C8B8FF;
+  --lav-dim:  rgba(200,184,255,.12);
+  --teal:     #7FD4C1;
+  --teal-dim: rgba(127,212,193,.1);
+  --amber:    #F0C07A;
+  --coral:    #F07A8A;
+  --r-sm:     8px;
+  --r-md:     14px;
+  --r-lg:     20px;
+  --r-xl:     28px;
+}
+
+*,*::before,*::after { box-sizing:border-box; margin:0; padding:0 }
+html { scroll-behavior:smooth }
+
+body {
+  font-family:'Noto Sans KR', sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  min-height:100vh;
+  font-size:16px;
+  line-height:1.7;
+  overflow-x:hidden;
+}
+
+/* ═══════════════════════════════════════
+   LAYOUT
+═══════════════════════════════════════ */
+.shell { max-width:680px; margin:0 auto; padding:0 1.25rem 6rem }
+
+/* ═══════════════════════════════════════
+   HEADER
+═══════════════════════════════════════ */
+.site-nav {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:1.5rem 0 2rem;
+}
+.nav-brand {
+  display:flex; align-items:center; gap:10px;
+  font-family:'Space Mono', monospace;
+  font-size:12px; letter-spacing:.12em; color:var(--muted);
+}
+.nav-pip {
+  width:8px; height:8px; border-radius:50%;
+  background:var(--lav);
+  box-shadow:0 0 8px var(--lav);
+  animation:pulse 2.4s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%,100% { opacity:1; transform:scale(1) }
+  50% { opacity:.5; transform:scale(.7) }
+}
+.nav-admin-btn {
+  background:none; border:1px solid var(--line); border-radius:var(--r-sm);
+  color:var(--muted); font-size:12px; padding:6px 14px;
+  cursor:pointer; font-family:inherit; transition:all .2s;
+}
+.nav-admin-btn:hover { border-color:var(--lav); color:var(--lav) }
+
+/* ═══════════════════════════════════════
+   PAGES
+═══════════════════════════════════════ */
+.page { display:none }
+.page.active { display:block }
+
+/* ═══════════════════════════════════════
+   INTRO PAGE
+═══════════════════════════════════════ */
+.intro-badge {
+  display:inline-flex; align-items:center; gap:8px;
+  background:var(--lav-dim); border:1px solid rgba(200,184,255,.2);
+  border-radius:100px; padding:6px 14px;
+  font-size:11px; font-weight:500; letter-spacing:.1em;
+  color:var(--lav); margin-bottom:2rem;
+  font-family:'Space Mono', monospace;
+}
+.intro-title {
+  font-size:clamp(28px,6vw,44px);
+  font-weight:700; line-height:1.18;
+  margin-bottom:1.25rem;
+  letter-spacing:-.02em;
+}
+.intro-title em {
+  font-style:normal;
+  background:linear-gradient(120deg, var(--lav), var(--teal));
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+.intro-desc {
+  font-size:16px; color:var(--muted);
+  max-width:520px; margin-bottom:2.5rem; line-height:1.8;
+}
+.intro-meta {
+  display:flex; flex-wrap:wrap; gap:1.5rem; margin-bottom:2.5rem;
+}
+.meta-chip {
+  display:flex; align-items:center; gap:7px;
+  font-size:13px; color:var(--muted);
+}
+.meta-chip-icon {
+  width:28px; height:28px; border-radius:7px;
+  background:var(--surface2);
+  display:flex; align-items:center; justify-content:center;
+  font-size:13px;
+}
+
+/* BASIS CARD */
+.basis-card {
+  background:var(--surface); border:1px solid var(--line);
+  border-radius:var(--r-lg); padding:1.5rem; margin-bottom:2rem;
+}
+.basis-title {
+  font-size:12px; font-weight:500; color:var(--muted);
+  letter-spacing:.1em; text-transform:uppercase;
+  font-family:'Space Mono', monospace;
+  margin-bottom:1rem;
+}
+.basis-grid {
+  display:grid; grid-template-columns:1fr 1fr; gap:10px;
+}
+.basis-item {
+  background:var(--surface2); border-radius:var(--r-sm);
+  padding:.8rem 1rem; display:flex; align-items:center; gap:10px;
+}
+.basis-dot {
+  width:6px; height:6px; border-radius:50%; flex-shrink:0;
+}
+.basis-text { font-size:12px; color:var(--muted); line-height:1.5 }
+.basis-text strong { color:var(--text); display:block; font-size:13px }
+
+/* INPUT CARD */
+.input-card {
+  background:var(--surface); border:1px solid var(--line);
+  border-radius:var(--r-lg); padding:1.5rem; margin-bottom:1.5rem;
+}
+.input-row { display:flex; gap:12px; flex-wrap:wrap }
+.field { flex:1; min-width:160px }
+.field label {
+  display:block; font-size:12px; color:var(--muted);
+  margin-bottom:6px; font-weight:500;
+}
+.field input {
+  width:100%; background:var(--surface2);
+  border:1px solid var(--line); border-radius:var(--r-sm);
+  padding:11px 14px; font-size:14px; color:var(--text);
+  font-family:inherit; outline:none; transition:border-color .2s;
+}
+.field input:focus { border-color:var(--lav) }
+.field input::placeholder { color:var(--muted) }
+
+/* PRIMARY BUTTON */
+.btn-primary {
+  background:linear-gradient(135deg, var(--lav), #9B8FE8);
+  color:#0F0F14; border:none; border-radius:var(--r-md);
+  padding:15px 36px; font-size:15px; font-weight:700;
+  cursor:pointer; font-family:inherit;
+  transition:transform .15s, box-shadow .2s;
+  display:inline-flex; align-items:center; gap:10px;
+}
+.btn-primary:hover { transform:translateY(-1px); box-shadow:0 8px 24px rgba(200,184,255,.3) }
+.btn-primary:active { transform:translateY(0) }
+.btn-primary:disabled { opacity:.4; cursor:not-allowed; transform:none; box-shadow:none }
+
+.btn-ghost {
+  background:none; border:1px solid var(--line); border-radius:var(--r-md);
+  color:var(--muted); padding:12px 24px; font-size:14px; font-weight:500;
+  cursor:pointer; font-family:inherit; transition:all .2s;
+  display:inline-flex; align-items:center; gap:8px;
+}
+.btn-ghost:hover { border-color:var(--lav); color:var(--lav) }
+
+/* ═══════════════════════════════════════
+   QUIZ PAGE
+═══════════════════════════════════════ */
+
+/* TOP BAR */
+.quiz-topbar {
+  display:flex; align-items:center; gap:12px;
+  padding:1.25rem 0 2rem;
+}
+.q-count {
+  font-family:'Space Mono', monospace;
+  font-size:12px; color:var(--muted); flex-shrink:0;
+  min-width:48px;
+}
+.progress-track {
+  flex:1; height:3px; background:var(--surface2); border-radius:2px; overflow:hidden;
+}
+.progress-fill {
+  height:100%;
+  background:linear-gradient(90deg, var(--lav), var(--teal));
+  border-radius:2px; transition:width .5s cubic-bezier(.4,0,.2,1);
+}
+.q-total { font-size:12px; color:var(--muted); flex-shrink:0 }
+
+/* QUESTION CARD */
+.q-stage {
+  position:relative; min-height:460px;
+}
+.q-card {
+  position:absolute; inset:0;
+  opacity:0; transform:translateX(40px);
+  transition:opacity .35s, transform .35s cubic-bezier(.4,0,.2,1);
+  pointer-events:none;
+}
+.q-card.active {
+  opacity:1; transform:translateX(0); pointer-events:all; position:relative;
+}
+.q-card.exit {
+  opacity:0; transform:translateX(-40px); pointer-events:none;
+}
+
+.q-scenario {
+  background:var(--surface); border:1px solid var(--line);
+  border-radius:var(--r-xl); padding:2rem;
+  margin-bottom:1.25rem;
+}
+.q-tag {
+  font-family:'Space Mono', monospace;
+  font-size:10px; letter-spacing:.14em; color:var(--lav);
+  background:var(--lav-dim); padding:4px 10px;
+  border-radius:100px; display:inline-block; margin-bottom:1.1rem;
+}
+.q-text {
+  font-size:17px; font-weight:500; line-height:1.65;
+  margin-bottom:.5rem; color:var(--text);
+}
+.q-sub {
+  font-size:13px; color:var(--muted); line-height:1.6;
+}
+
+/* CHOICES */
+.choices { display:flex; flex-direction:column; gap:10px }
+.choice {
+  background:var(--surface); border:1px solid var(--line);
+  border-radius:var(--r-md); padding:1.1rem 1.25rem;
+  cursor:pointer; transition:all .18s;
+  display:flex; align-items:flex-start; gap:12px;
+}
+.choice:hover {
+  border-color:rgba(200,184,255,.3);
+  background:var(--surface2);
+  transform:translateX(3px);
+}
+.choice.selected {
+  border-color:var(--lav);
+  background:var(--lav-dim);
+}
+.choice-alpha {
+  width:26px; height:26px; border-radius:7px;
+  background:var(--surface2); border:1px solid var(--line);
+  display:flex; align-items:center; justify-content:center;
+  font-family:'Space Mono', monospace; font-size:11px;
+  color:var(--muted); flex-shrink:0; margin-top:1px;
+  transition:all .18s;
+}
+.choice.selected .choice-alpha {
+  background:var(--lav); border-color:var(--lav);
+  color:#0F0F14; font-weight:700;
+}
+.choice-text { font-size:14px; line-height:1.6; color:var(--muted) }
+.choice.selected .choice-text { color:var(--text) }
+
+/* NAV */
+.q-nav {
+  display:flex; justify-content:space-between; align-items:center;
+  margin-top:1.5rem; padding-top:1.5rem;
+  border-top:1px solid var(--line);
+}
+
+/* ═══════════════════════════════════════
+   RESULT PAGE
+═══════════════════════════════════════ */
+.result-hero { text-align:center; padding:1.5rem 0 2.5rem }
+
+.result-ring {
+  position:relative; width:140px; height:140px;
+  margin:0 auto 1.5rem;
+}
+.result-ring canvas { position:absolute; inset:0 }
+.result-ring-center {
+  position:absolute; inset:0;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+}
+.result-score-big {
+  font-family:'Space Mono', monospace;
+  font-size:30px; font-weight:700;
+  background:linear-gradient(135deg, var(--lav), var(--teal));
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+  background-clip:text; line-height:1;
+}
+.result-score-label { font-size:10px; color:var(--muted); margin-top:3px }
+
+.result-type {
+  font-size:11px; letter-spacing:.14em; color:var(--lav);
+  font-family:'Space Mono', monospace;
+  margin-bottom:.6rem; text-transform:uppercase;
+}
+.result-title { font-size:24px; font-weight:700; margin-bottom:.5rem; letter-spacing:-.01em }
+.result-desc { font-size:14px; color:var(--muted); max-width:480px; margin:0 auto }
+
+/* RADAR */
+.radar-wrap {
+  background:var(--surface); border:1px solid var(--line);
+  border-radius:var(--r-xl); padding:2rem;
+  margin-bottom:1.5rem; display:flex; justify-content:center;
+  overflow:hidden;
+}
+
+/* SCORE BARS */
+.score-section { margin-bottom:1.5rem }
+.score-row { margin-bottom:12px }
+.score-row-head {
+  display:flex; justify-content:space-between; align-items:center;
+  margin-bottom:5px;
+}
+.score-row-name { font-size:13px; font-weight:500 }
+.score-row-val {
+  font-family:'Space Mono', monospace; font-size:12px; color:var(--muted);
+}
+.score-bar-bg {
+  height:5px; background:var(--surface2); border-radius:3px; overflow:hidden;
+}
+.score-bar-fill {
+  height:100%; border-radius:3px;
+  background:linear-gradient(90deg, var(--lav), var(--teal));
+  transition:width 1s cubic-bezier(.4,0,.2,1);
+}
+
+/* REC CARDS */
+.rec-section { margin-bottom:1.5rem }
+.rec-grid {
+  display:grid; grid-template-columns:repeat(auto-fill, minmax(190px,1fr));
+  gap:10px; margin-top:.75rem;
+}
+.rec-card {
+  background:var(--surface); border:1px solid var(--line);
+  border-radius:var(--r-lg); padding:1.25rem; position:relative;
+  transition:border-color .18s;
+}
+.rec-card:hover { border-color:rgba(200,184,255,.25) }
+.rec-urgent {
+  position:absolute; top:12px; right:12px;
+  font-size:10px; font-weight:600; padding:2px 8px;
+  border-radius:100px; background:rgba(240,122,138,.15); color:var(--coral);
+}
+.rec-icon {
+  width:36px; height:36px; border-radius:9px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:18px; margin-bottom:10px;
+}
+.rec-course { font-size:13px; font-weight:500; line-height:1.4; margin-bottom:4px }
+.rec-score-txt { font-size:11px; color:var(--muted) }
+.rec-score-txt span { color:var(--coral) }
+
+/* RESULT ACTIONS */
+.result-actions {
+  display:flex; gap:10px; flex-wrap:wrap; justify-content:center;
+  margin-top:2rem; padding-top:2rem; border-top:1px solid var(--line);
+}
+
+/* ═══════════════════════════════════════
+   ADMIN PAGE
+═══════════════════════════════════════ */
+.admin-gate {
+  max-width:360px; margin:3rem auto;
+  background:var(--surface); border:1px solid var(--line);
+  border-radius:var(--r-xl); padding:2.5rem; text-align:center;
+}
+.admin-gate h3 { font-size:18px; font-weight:700; margin:1rem 0 .4rem }
+.admin-gate p { font-size:13px; color:var(--muted); margin-bottom:1.5rem }
+.admin-pw-field {
+  width:100%; background:var(--surface2); border:1px solid var(--line);
+  border-radius:var(--r-sm); padding:12px 14px; font-size:14px;
+  color:var(--text); font-family:inherit; outline:none; margin-bottom:10px;
+  text-align:center; letter-spacing:.2em; transition:border-color .2s;
+}
+.admin-pw-field:focus { border-color:var(--lav) }
+.admin-err { font-size:12px; color:var(--coral); margin-top:6px; display:none }
+
+/* ADMIN DASH */
+.admin-header {
+  display:flex; align-items:center; justify-content:space-between;
+  flex-wrap:wrap; gap:12px; margin-bottom:2rem;
+}
+.admin-title { font-size:20px; font-weight:700 }
+.admin-controls { display:flex; gap:8px; flex-wrap:wrap; align-items:center }
+.admin-select {
+  background:var(--surface); border:1px solid var(--line);
+  border-radius:var(--r-sm); padding:7px 12px; font-size:12px;
+  color:var(--text); font-family:inherit; outline:none; cursor:pointer;
+}
+
+.kpi-grid {
+  display:grid; grid-template-columns:repeat(auto-fit, minmax(120px,1fr));
+  gap:10px; margin-bottom:2rem;
+}
+.kpi {
+  background:var(--surface); border:1px solid var(--line);
+  border-radius:var(--r-lg); padding:1.1rem;
+}
+.kpi-label { font-size:11px; color:var(--muted); margin-bottom:6px }
+.kpi-value { font-size:26px; font-weight:700; line-height:1 }
+.kpi-sub { font-size:11px; color:var(--muted); margin-top:3px }
+
+.chart-panel {
+  background:var(--surface); border:1px solid var(--line);
+  border-radius:var(--r-xl); padding:1.5rem; margin-bottom:1.5rem;
+}
+.panel-title {
+  font-size:13px; font-weight:500; margin-bottom:1.25rem;
+  display:flex; align-items:center; gap:8px;
+}
+.panel-title::after {
+  content:''; flex:1; height:1px; background:var(--line);
+}
+
+/* ADMIN BAR CHART */
+.adm-bar-row { display:flex; align-items:center; gap:10px; margin-bottom:10px }
+.adm-bar-lbl { width:76px; font-size:12px; color:var(--muted); text-align:right; flex-shrink:0; white-space:nowrap }
+.adm-bar-bg { flex:1; height:16px; background:var(--surface2); border-radius:3px; overflow:hidden }
+.adm-bar-fill { height:100%; border-radius:3px; transition:width .8s }
+.adm-bar-val { width:32px; font-size:12px; font-family:'Space Mono', monospace; flex-shrink:0 }
+
+/* DEMAND */
+.dem-row { display:flex; align-items:center; gap:10px; margin-bottom:10px }
+.dem-icon { width:24px; height:24px; border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:12px; flex-shrink:0 }
+.dem-name { width:68px; font-size:12px; color:var(--muted); flex-shrink:0 }
+.dem-bg { flex:1; height:12px; background:var(--surface2); border-radius:3px; overflow:hidden }
+.dem-fill { height:100%; border-radius:3px; transition:width .8s }
+.dem-cnt { width:32px; font-size:12px; font-family:'Space Mono', monospace; flex-shrink:0 }
+.dem-urg { font-size:10px; padding:2px 6px; border-radius:100px; background:rgba(240,122,138,.15); color:var(--coral); flex-shrink:0 }
+
+/* PEOPLE TABLE */
+.tbl-wrap { overflow-x:auto; border-radius:var(--r-lg); border:1px solid var(--line) }
+.ptbl { width:100%; border-collapse:collapse; font-size:12px; min-width:640px }
+.ptbl th {
+  font-size:11px; font-weight:500; color:var(--muted);
+  background:var(--surface); padding:10px 12px;
+  text-align:left; border-bottom:1px solid var(--line); white-space:nowrap;
+  font-family:'Space Mono', monospace;
+}
+.ptbl td { padding:10px 12px; border-bottom:1px solid var(--line); vertical-align:middle }
+.ptbl tr:last-child td { border-bottom:none }
+.ptbl tr:hover td { background:var(--surface2) }
+.chip {
+  display:inline-block; font-size:10px; padding:2px 8px;
+  border-radius:100px; font-weight:500;
+}
+.chip-hi { background:rgba(127,212,193,.15); color:var(--teal) }
+.chip-mid { background:rgba(240,192,122,.15); color:var(--amber) }
+.chip-lo { background:rgba(240,122,138,.15); color:var(--coral) }
+
+/* GAS NOTICE */
+.gas-notice {
+  border-radius:var(--r-md); padding:1rem 1.25rem;
+  margin-bottom:1.5rem; font-size:13px; line-height:1.8;
+}
+.gas-ok   { background:rgba(127,212,193,.08); border:1px solid rgba(127,212,193,.2); color:var(--teal) }
+.gas-warn { background:rgba(240,192,122,.08); border:1px solid rgba(240,192,122,.2); color:var(--amber) }
+.gas-err  { background:rgba(240,122,138,.08); border:1px solid rgba(240,122,138,.2); color:var(--coral) }
+.gas-info { background:var(--surface); border:1px solid var(--line); color:var(--muted) }
+
+/* TOAST */
+.toast {
+  position:fixed; bottom:2rem; left:50%;
+  transform:translateX(-50%) translateY(16px);
+  background:var(--surface2); border:1px solid var(--line);
+  color:var(--text); font-size:13px; padding:10px 20px;
+  border-radius:100px; opacity:0;
+  transition:all .3s; pointer-events:none; z-index:9999; white-space:nowrap;
+}
+.toast.show { opacity:1; transform:translateX(-50%) translateY(0) }
+
+/* SPINNER */
+.spinner {
+  display:inline-block; width:14px; height:14px;
+  border:2px solid rgba(200,184,255,.2); border-top-color:var(--lav);
+  border-radius:50%; animation:spin .7s linear infinite;
+  margin-right:6px; vertical-align:middle;
+}
+@keyframes spin { to { transform:rotate(360deg) } }
+
+/* SEC LABEL */
+.sec-label {
+  font-family:'Space Mono', monospace; font-size:10px;
+  letter-spacing:.14em; color:var(--muted); text-transform:uppercase;
+  margin-bottom:1rem; display:flex; align-items:center; gap:10px;
+}
+.sec-label::after { content:''; flex:1; height:1px; background:var(--line) }
+
+/* DIVIDER */
+.div { height:1px; background:var(--line); margin:2rem 0 }
+
+@media (max-width:480px) {
+  .basis-grid { grid-template-columns:1fr }
+  .intro-title { font-size:28px }
+  .q-text { font-size:15px }
+  .choice-text { font-size:13px }
+}
+</style>
+</head>
+<body>
+<div class="shell">
+
+<nav class="site-nav">
+  <div class="nav-brand">
+    <div class="nav-pip"></div>
+    LEADERSHIP DIAGNOSTIC
+  </div>
+  <button class="nav-admin-btn" onclick="goAdmin()">관리자 →</button>
+</nav>
+
+<!-- ══════════════════════════════════
+     INTRO
+══════════════════════════════════ -->
+<div class="page active" id="pg-intro">
+  <div class="intro-badge">
+    <span>SITUATIONAL JUDGMENT TEST</span>
+  </div>
+  <h1 class="intro-title">나는 어떤<br><em>팀장</em>인가?</h1>
+  <p class="intro-desc">
+    정해진 답은 없습니다. 27가지 실제 업무 상황에서
+    당신이 자연스럽게 선택하는 행동을 골라주세요.
+    선택의 패턴으로 9가지 리더십 역량 프로파일을 도출합니다.
+  </p>
+
+  <div class="intro-meta">
+    <span class="meta-chip">
+      <span class="meta-chip-icon">⏱</span> 약 10분 소요
+    </span>
+    <span class="meta-chip">
+      <span class="meta-chip-icon">🎯</span> 27개 상황 문항
+    </span>
+    <span class="meta-chip">
+      <span class="meta-chip-icon">📐</span> Lominger 역량 모델 기반
+    </span>
+    <span class="meta-chip">
+      <span class="meta-chip-icon">🔒</span> 익명 보장
+    </span>
+  </div>
+
+  <div class="basis-card">
+    <div class="basis-title">진단 근거 모델</div>
+    <div class="basis-grid">
+      <div class="basis-item">
+        <div class="basis-dot" style="background:var(--lav)"></div>
+        <div class="basis-text">
+          <strong>Lominger 38 Competencies</strong>
+          글로벌 리더십 역량 표준 프레임워크
+        </div>
+      </div>
+      <div class="basis-item">
+        <div class="basis-dot" style="background:var(--teal)"></div>
+        <div class="basis-text">
+          <strong>SJT 방식</strong>
+          상황 판단 테스트 — 심리학적 타당도 검증
+        </div>
+      </div>
+      <div class="basis-item">
+        <div class="basis-dot" style="background:var(--amber)"></div>
+        <div class="basis-text">
+          <strong>9대 핵심 역량</strong>
+          국내 중간관리자 우선 역량 연구 기반
+        </div>
+      </div>
+      <div class="basis-item">
+        <div class="basis-dot" style="background:var(--coral)"></div>
+        <div class="basis-text">
+          <strong>5점 Likert 환산</strong>
+          행동 빈도를 역량 수준으로 정량화
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="input-card">
+    <div class="input-row">
+      <div class="field">
+        <label>이름 (또는 닉네임)</label>
+        <input id="i-name" type="text" placeholder="홍길동 팀장" />
+      </div>
+      <div class="field">
+        <label>소속 부서</label>
+        <input id="i-dept" type="text" placeholder="영업1팀" />
+      </div>
+    </div>
+  </div>
+
+  <button class="btn-primary" onclick="startQuiz()">
+    진단 시작하기
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+  </button>
+</div>
+
+<!-- ══════════════════════════════════
+     QUIZ
+══════════════════════════════════ -->
+<div class="page" id="pg-quiz">
+  <div class="quiz-topbar">
+    <span class="q-count" id="q-count">01 / 27</span>
+    <div class="progress-track">
+      <div class="progress-fill" id="q-progress" style="width:0%"></div>
+    </div>
+    <span class="q-total" id="q-label">코칭</span>
+  </div>
+  <div class="q-stage" id="q-stage"></div>
+  <div class="q-nav">
+    <button class="btn-ghost" id="q-back" onclick="prevQ()" style="visibility:hidden">
+      ← 이전
+    </button>
+    <button class="btn-primary" id="q-next" onclick="nextQ()" disabled>
+      다음
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     RESULT
+══════════════════════════════════ -->
+<div class="page" id="pg-result">
+  <div class="result-hero">
+    <div class="result-ring">
+      <canvas id="ring-canvas" width="140" height="140"></canvas>
+      <div class="result-ring-center">
+        <div class="result-score-big" id="r-avg">-</div>
+        <div class="result-score-label">종합 점수</div>
+      </div>
+    </div>
+    <div class="result-type" id="r-type"></div>
+    <h2 class="result-title" id="r-title"></h2>
+    <p class="result-desc" id="r-desc"></p>
+  </div>
+
+  <div class="div"></div>
+
+  <div class="sec-label">역량 레이더</div>
+  <div class="radar-wrap">
+    <canvas id="radar-canvas" width="520" height="420"></canvas>
+  </div>
+
+  <div class="sec-label">영역별 점수</div>
+  <div class="score-section" id="r-scores"></div>
+
+  <div class="sec-label">추천 교육 과정</div>
+  <p style="font-size:13px;color:var(--muted);margin-bottom:.75rem">
+    상대적으로 낮게 나타난 역량을 중심으로 추천드립니다.
+  </p>
+  <div class="rec-grid" id="r-recs"></div>
+
+  <div class="result-actions">
+    <button class="btn-ghost" onclick="dlTxt()">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7,10 12,15 17,10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      결과 저장
+    </button>
+    <button class="btn-ghost" onclick="doPrint()">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6,9 6,2 18,2 18,9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+      인쇄 / PDF
+    </button>
+    <button class="btn-ghost" onclick="retake()">다시 진단하기</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     ADMIN
+══════════════════════════════════ -->
+<div class="page" id="pg-admin">
+  <div id="adm-gate">
+    <div class="admin-gate">
+      <div style="font-size:32px">🔐</div>
+      <h3>관리자 로그인</h3>
+      <p>비밀번호를 입력해주세요</p>
+      <input class="admin-pw-field" id="adm-pw" type="password"
+        placeholder="• • • • • • • •"
+        onkeydown="if(event.key==='Enter')admLogin()"/>
+      <button class="btn-primary" style="width:100%;justify-content:center" onclick="admLogin()">로그인</button>
+      <p class="admin-err" id="adm-err">비밀번호가 올바르지 않습니다.</p>
+    </div>
+  </div>
+
+  <div id="adm-dash" style="display:none">
+    <div class="admin-header">
+      <div>
+        <div class="admin-title">관리자 대시보드</div>
+      </div>
+      <div class="admin-controls">
+        <button class="btn-ghost" onclick="loadAdmData()" style="padding:8px 16px;font-size:12px">
+          ↺ 새로고침
+        </button>
+        <button class="btn-ghost" onclick="dlCSV()" style="padding:8px 16px;font-size:12px">
+          CSV 다운로드
+        </button>
+        <select class="admin-select" id="f-dept" onchange="renderAdm()">
+          <option value="">전체 소속</option>
+        </select>
+        <select class="admin-select" id="f-score" onchange="renderAdm()">
+          <option value="">전체 점수</option>
+          <option value="hi">4점 이상</option>
+          <option value="mid">3~3.9점</option>
+          <option value="lo">3점 미만</option>
+        </select>
+      </div>
+    </div>
+
+    <div id="gas-notice" class="gas-notice gas-info"></div>
+    <div id="kpi-grid" class="kpi-grid"></div>
+
+    <div class="chart-panel">
+      <div class="panel-title">역량별 평균 점수</div>
+      <div id="adm-bar-chart"></div>
+    </div>
+
+    <div class="chart-panel">
+      <div class="panel-title">교육 수요 (3점 이하 인원)</div>
+      <div id="adm-dem-chart"></div>
+    </div>
+
+    <div class="panel-title" style="margin-bottom:.75rem">팀장별 진단 결과</div>
+    <div class="tbl-wrap">
+      <table class="ptbl">
+        <thead><tr>
+          <th>이름</th><th>소속</th><th>종합</th>
+          <th>코칭</th><th>협상</th><th>AI</th><th>기획</th><th>손익</th>
+          <th>어학</th><th>트렌드</th><th>문화</th><th>감도</th><th>제출일</th>
+        </tr></thead>
+        <tbody id="adm-tbl"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+</div><!-- /shell -->
+<div class="toast" id="toast"></div>
+
+<!-- ══════════════════════════════════
+     숨겨진 Netlify Form (보조)
+══════════════════════════════════ -->
+<form name="assessment" netlify netlify-honeypot="bot-field" hidden>
+  <input name="name"/><input name="dept"/><input name="avg"/>
+  <input name="coaching"/><input name="negot"/><input name="ai"/>
+  <input name="planning"/><input name="pnl"/><input name="global"/>
+  <input name="trend"/><input name="culture"/><input name="eq"/>
+</form>
+
+<script>
+/* ════════════════════════════════════════════════
+   ★ CONFIG — 이 두 줄만 수정하면 배포 완료
+   ════════════════════════════════════════════════
+   Google Sheets Apps Script 웹앱 URL 붙여넣기
+   (설정 방법은 README.md 참고)
+   ════════════════════════════════════════════════ */
+const GAS_URL  = 'https://script.google.com/macros/s/여기에_웹앱_URL/exec';
+const ADMIN_PW = 'admin1234';
+/* ════════════════════════════════════════════════ */
+
+/* ─────────────────────────────────────────
+   SKILL DEFINITIONS
+───────────────────────────────────────── */
+const SKILLS = [
+  { id:'coaching',  name:'코칭',      icon:'🎯', color:'#C8B8FF', bg:'rgba(200,184,255,.12)', course:'팀장 코칭 스킬 심화과정' },
+  { id:'negot',     name:'협상',      icon:'🤝', color:'#7FD4C1', bg:'rgba(127,212,193,.1)',  course:'비즈니스 협상 실전과정' },
+  { id:'ai',        name:'AI 활용',   icon:'🤖', color:'#87BFFF', bg:'rgba(135,191,255,.1)',  course:'AI 도구 업무 활용 워크숍' },
+  { id:'planning',  name:'기획',      icon:'📐', color:'#F0C07A', bg:'rgba(240,192,122,.1)',  course:'전략적 기획력 강화과정' },
+  { id:'pnl',       name:'손익관리',  icon:'📊', color:'#A8E6A3', bg:'rgba(168,230,163,.1)',  course:'재무·손익 이해과정' },
+  { id:'global',    name:'글로벌어학',icon:'🌐', color:'#F0B87A', bg:'rgba(240,184,122,.1)',  course:'비즈니스 글로벌 어학과정' },
+  { id:'trend',     name:'트렌드',    icon:'📡', color:'#D4A8FF', bg:'rgba(212,168,255,.1)',  course:'비즈니스 트렌드 리딩과정' },
+  { id:'culture',   name:'문화예술',  icon:'🎨', color:'#FFB8C8', bg:'rgba(255,184,200,.1)',  course:'문화예술 인문학과정' },
+  { id:'eq',        name:'감도개선',  icon:'✨', color:'#7FD4C1', bg:'rgba(127,212,193,.1)',  course:'리더 감성 지능(EQ) 과정' },
+];
+
+/* ─────────────────────────────────────────
+   27 QUESTIONS  (3 per skill, SJT format)
+   각 보기의 score: 해당 역량 점수 기여값 (1~5)
+───────────────────────────────────────── */
+const QUESTIONS = [
+  // ── 코칭 ──
+  {
+    skill:'coaching', tag:'팀 운영 상황',
+    text:'팀원이 같은 실수를 반복합니다. 어떻게 접근하시겠습니까?',
+    sub:'최근 3주 동안 보고서 오류가 세 번 발생했습니다.',
+    choices:[
+      { text:'이번에도 틀린 부분을 직접 수정해주고 올바른 답을 알려준다.', score:2 },
+      { text:'어디서부터 어떻게 생각했는지 질문을 통해 스스로 원인을 찾게 한다.', score:5 },
+      { text:'팀원에게 확인 체크리스트를 만들어 제출 전 자가점검을 하도록 한다.', score:4 },
+      { text:'공개 팀 회의에서 사례로 다뤄 전체가 주의하도록 공유한다.', score:1 },
+    ]
+  },
+  {
+    skill:'coaching', tag:'성과 면담 상황',
+    text:'하반기 평가 면담에서 팀원이 "저는 잘 모르겠어요"라고만 합니다.',
+    sub:'자기 강점과 개발점을 묻는 질문에 계속 막연한 답만 돌아옵니다.',
+    choices:[
+      { text:'제가 관찰한 강점과 개선점을 먼저 구체적으로 제시한다.', score:3 },
+      { text:'"지난 달 A 프로젝트에서 가장 뿌듯했던 순간은?"처럼 구체적 경험을 묻는다.', score:5 },
+      { text:'면담을 짧게 마무리하고 다음 기회에 더 준비해오도록 요청한다.', score:2 },
+      { text:'인사팀에 해당 팀원의 성향 분석 자료를 요청한다.', score:1 },
+    ]
+  },
+  {
+    skill:'coaching', tag:'성장 지원 상황',
+    text:'팀원이 본인도 몰랐던 숨은 역량을 발휘했습니다. 어떻게 하시겠습니까?',
+    sub:'평소 조용하던 팀원이 고객사 프레젠테이션에서 돌발 질문을 매우 능숙하게 처리했습니다.',
+    choices:[
+      { text:'수고했다고 말하고 이번 성과를 팀 공지에 올린다.', score:3 },
+      { text:'그 상황에서 어떻게 생각하고 대응했는지를 함께 복기하며 강점을 인식시킨다.', score:5 },
+      { text:'다음 번에도 비슷한 역할을 맡길 수 있도록 바로 업무 계획에 반영한다.', score:4 },
+      { text:'특별히 언급하지 않고 자연스럽게 넘어간다.', score:1 },
+    ]
+  },
+
+  // ── 협상 ──
+  {
+    skill:'negot', tag:'이해관계 조율 상황',
+    text:'타 팀과 공유 자원(인력, 장비) 배분을 놓고 의견이 충돌합니다.',
+    sub:'두 팀 모두 다음 달 동일한 시기에 같은 자원이 필요합니다.',
+    choices:[
+      { text:'상위 관리자에게 판단을 위임해 결정을 빠르게 받는다.', score:2 },
+      { text:'양 팀의 핵심 니즈를 파악한 후, 일정이나 범위를 조정해 둘 다 충족시키는 안을 제안한다.', score:5 },
+      { text:'먼저 요청한 팀이 우선이라는 원칙을 적용해 해결한다.', score:3 },
+      { text:'공식 협의체를 구성해 정기 회의를 진행한다.', score:2 },
+    ]
+  },
+  {
+    skill:'negot', tag:'협상 준비 상황',
+    text:'다음 주 파트너사와 계약 조건 협상이 있습니다. 어떻게 준비하십니까?',
+    sub:'계약 금액, 납기, 품질 기준 세 가지 모두 이견이 있는 상황입니다.',
+    choices:[
+      { text:'우리 측 최저 수용선만 확인하고 현장에서 유연하게 대응한다.', score:2 },
+      { text:'상대방이 가장 중요하게 여기는 조건을 사전에 파악하고, 양보 가능한 항목과 사수해야 할 항목을 구분해둔다.', score:5 },
+      { text:'이전 계약서를 검토해 동일 조건 유지를 기본 입장으로 잡는다.', score:3 },
+      { text:'법무팀과 함께 협상에 참여해 법적 리스크 중심으로 접근한다.', score:2 },
+    ]
+  },
+  {
+    skill:'negot', tag:'내부 설득 상황',
+    text:'새로운 업무 방식 도입에 팀원들이 강하게 반발합니다.',
+    sub:'"왜 바꿔야 하죠?" "지금도 충분한데요"라는 반응이 대다수입니다.',
+    choices:[
+      { text:'경영진 지시임을 강조해 따르도록 설득한다.', score:1 },
+      { text:'반발의 구체적인 이유를 청취하고, 우려 사항을 해소하는 방향으로 도입 방식을 수정한다.', score:5 },
+      { text:'변화가 가져올 이점을 데이터로 제시하며 논리적으로 설명한다.', score:4 },
+      { text:'먼저 동의하는 팀원부터 시범 적용 후 사례를 만들어 전파한다.', score:4 },
+    ]
+  },
+
+  // ── AI 활용 ──
+  {
+    skill:'ai', tag:'업무 효율화 상황',
+    text:'반복적인 주간 보고서 작성에 매주 3시간이 소요됩니다.',
+    sub:'데이터 수집, 정리, 요약 작업이 대부분입니다.',
+    choices:[
+      { text:'작성 담당 팀원을 교체해 부담을 분산시킨다.', score:1 },
+      { text:'AI 툴로 데이터 요약과 초안 작성을 자동화하고 사람은 검토·판단만 한다.', score:5 },
+      { text:'보고서 양식을 단순화해 작성 시간을 줄인다.', score:3 },
+      { text:'보고 주기를 월 1회로 변경하도록 윗선에 제안한다.', score:2 },
+    ]
+  },
+  {
+    skill:'ai', tag:'의사결정 지원 상황',
+    text:'신규 시장 진입 여부를 결정해야 하는데 데이터가 너무 방대합니다.',
+    sub:'경쟁사 현황, 고객 리뷰, 시장 규모 등 수십 개 소스가 있습니다.',
+    choices:[
+      { text:'팀원에게 자료 조사를 맡기고 요약본을 받아 판단한다.', score:2 },
+      { text:'AI 도구로 핵심 인사이트를 빠르게 추출하고 패턴을 파악한 뒤 의사결정에 활용한다.', score:5 },
+      { text:'외부 컨설팅을 의뢰한다.', score:2 },
+      { text:'경험적 직관을 우선으로 일부 데이터만 선별해 검토한다.', score:3 },
+    ]
+  },
+  {
+    skill:'ai', tag:'팀 역량 전파 상황',
+    text:'팀원 중 AI 도구 활용 능력이 뒤처지는 사람이 있습니다.',
+    sub:'나머지 팀원들과 업무 속도 차이가 점점 커지고 있습니다.',
+    choices:[
+      { text:'AI를 잘 쓰는 팀원에게 도움을 요청하도록 연결만 해준다.', score:3 },
+      { text:'직접 활용 사례를 보여주며 팀 단위 실습 세션을 진행한다.', score:5 },
+      { text:'AI 도구를 쓰지 않아도 되는 업무를 배정한다.', score:1 },
+      { text:'사내 AI 교육 신청을 권유하고 수강 여부만 확인한다.', score:3 },
+    ]
+  },
+
+  // ── 기획 ──
+  {
+    skill:'planning', tag:'목표 설정 상황',
+    text:'연초에 팀 목표를 설정하려 합니다. 어떻게 접근하십니까?',
+    sub:'올해 조직 목표는 "디지털 고객 경험 개선"입니다.',
+    choices:[
+      { text:'지난해 목표에서 수치만 올려 설정한다.', score:1 },
+      { text:'조직 목표를 분해해 우리 팀이 기여할 수 있는 구체적 영역과 지표를 팀원과 함께 도출한다.', score:5 },
+      { text:'경쟁 팀의 목표 수준을 참고해 비슷하게 설정한다.', score:2 },
+      { text:'달성 가능성에 초점을 맞춰 여유 있는 목표를 잡는다.', score:2 },
+    ]
+  },
+  {
+    skill:'planning', tag:'기획 실행 상황',
+    text:'경영진이 2개월 안에 신규 서비스 론칭을 요청했습니다.',
+    sub:'현실적으로 빡빡한 일정이지만 불가능하지는 않습니다.',
+    choices:[
+      { text:'일정이 너무 촉박하다는 이유를 들어 연장을 요청한다.', score:2 },
+      { text:'핵심 기능과 부가 기능을 분리해 MVP(최소 기능 제품)를 먼저 론칭하고 이후 보완한다.', score:5 },
+      { text:'팀원들을 야근 체제로 전환해 일정을 맞춘다.', score:2 },
+      { text:'업무를 세분화한 뒤 주요 마일스톤과 리스크 요인을 포함한 실행 계획을 만든다.', score:4 },
+    ]
+  },
+  {
+    skill:'planning', tag:'문제 해결 상황',
+    text:'분기 실적이 목표 대비 20% 미달됩니다. 어떻게 접근하십니까?',
+    sub:'3개월이 남아 있습니다.',
+    choices:[
+      { text:'팀원들에게 개인 목표를 재할당해 책임을 강화한다.', score:2 },
+      { text:'미달 원인을 내부 요인과 외부 요인으로 나눠 분석한 뒤 우선순위가 높은 해결책부터 실행한다.', score:5 },
+      { text:'경쟁사 전략을 벤치마킹해 즉시 따라한다.', score:2 },
+      { text:'남은 기간 현실 가능한 목표로 하향 조정하고 경영진에 보고한다.', score:3 },
+    ]
+  },
+
+  // ── 손익관리 ──
+  {
+    skill:'pnl', tag:'예산 운영 상황',
+    text:'팀 예산의 70%가 상반기에 소진됐습니다. 어떻게 하시겠습니까?',
+    sub:'하반기에 중요한 프로젝트가 2개 더 예정되어 있습니다.',
+    choices:[
+      { text:'추가 예산을 바로 본사에 신청한다.', score:2 },
+      { text:'지출 내역을 분석해 비핵심 비용을 절감하고, 하반기 프로젝트 ROI를 기준으로 우선순위를 재조정한다.', score:5 },
+      { text:'팀원들에게 씀씀이를 줄이라고 공지한다.', score:1 },
+      { text:'예산 소진 현황을 그대로 경영진에 보고하고 지시를 기다린다.', score:2 },
+    ]
+  },
+  {
+    skill:'pnl', tag:'비용-효익 판단 상황',
+    text:'외부 교육 프로그램 참가 제안을 받았습니다. 비용은 1인당 150만 원입니다.',
+    sub:'팀원 5명이 참가하길 원하는데, 예산이 빠듯합니다.',
+    choices:[
+      { text:'교육 내용이 좋아 보이면 전원 참가시킨다.', score:2 },
+      { text:'교육 내용이 팀 성과에 기여하는 정도, 유사 교육 비용, 자체 진행 가능성을 비교해 의사결정한다.', score:5 },
+      { text:'예산이 부족하므로 전원 불참으로 결정한다.', score:1 },
+      { text:'참가를 원하는 팀원이 개인 비용으로 참가하도록 안내한다.', score:1 },
+    ]
+  },
+  {
+    skill:'pnl', tag:'성과 측정 상황',
+    text:'팀이 수행한 프로젝트의 성과를 경영진에게 보고해야 합니다.',
+    sub:'눈에 보이는 수치 성과 외에 무형의 기여도 있습니다.',
+    choices:[
+      { text:'직관적으로 "성공적으로 완수했습니다"라고 보고한다.', score:1 },
+      { text:'매출·비용 절감 등 재무 지표와 고객 만족도·브랜드 가치 등 비재무 지표를 모두 정량화해 제시한다.', score:5 },
+      { text:'팀원들의 고생을 중심으로 서술적 보고서를 작성한다.', score:2 },
+      { text:'유사 프로젝트 업계 벤치마크와 비교해 상대적 성과를 강조한다.', score:4 },
+    ]
+  },
+
+  // ── 글로벌 어학 ──
+  {
+    skill:'global', tag:'글로벌 커뮤니케이션 상황',
+    text:'해외 파트너사가 급히 화상 미팅을 요청했습니다. 통역 없이 진행됩니다.',
+    sub:'내용은 어느 정도 이해하지만 발화에 자신이 없습니다.',
+    choices:[
+      { text:'미팅을 다음 주로 미루고 통역을 준비한다.', score:2 },
+      { text:'핵심 논의 포인트를 사전에 영문으로 정리해두고, 필요 시 "Let me clarify"로 확인하며 진행한다.', score:5 },
+      { text:'영어를 잘하는 팀원에게 대신 참석을 요청한다.', score:2 },
+      { text:'미팅 자료를 사전에 공유해 문서 중심으로 확인하도록 요청한다.', score:3 },
+    ]
+  },
+  {
+    skill:'global', tag:'글로벌 문서 작성 상황',
+    text:'해외 바이어에게 첫 번째 제안 메일을 보내야 합니다.',
+    sub:'제품 강점을 설득력 있게 전달해야 합니다.',
+    choices:[
+      { text:'국문 제안서를 번역기로 돌려 그대로 발송한다.', score:1 },
+      { text:'AIDA(주의-관심-욕구-행동) 구조로 영문 메일을 직접 작성하고 원어민 감수 툴로 다듬는다.', score:5 },
+      { text:'글로벌 팀 동료에게 작성을 부탁한다.', score:2 },
+      { text:'짧게 미팅을 먼저 잡고 이메일은 미팅 이후에 보낸다.', score:3 },
+    ]
+  },
+  {
+    skill:'global', tag:'글로벌 역량 개발 상황',
+    text:'6개월 후 글로벌 파트너십 협상을 리드해야 합니다.',
+    sub:'현재 비즈니스 영어가 부족하다는 것을 알고 있습니다.',
+    choices:[
+      { text:'6개월은 충분하지 않으므로 다른 팀원에게 역할을 넘긴다.', score:1 },
+      { text:'협상 관련 영어 표현을 집중 학습하고, 비슷한 상황을 모의 연습한다.', score:5 },
+      { text:'필요한 상황에서만 번역기를 활용하겠다고 계획한다.', score:2 },
+      { text:'영어 학원을 등록하되 현업 맥락에서의 실전 연습은 별도로 계획하지 않는다.', score:3 },
+    ]
+  },
+
+  // ── 트렌드 ──
+  {
+    skill:'trend', tag:'변화 감지 상황',
+    text:'업계에서 새로운 비즈니스 모델이 빠르게 확산되고 있습니다.',
+    sub:'아직 우리 팀엔 직접적 영향이 없지만 1~2년 내 영향이 예상됩니다.',
+    choices:[
+      { text:'영향이 실제로 발생할 때 검토해도 늦지 않으므로 지켜본다.', score:1 },
+      { text:'변화 양상을 모니터링하고 팀이 준비해야 할 역량과 업무 방식 변화를 먼저 파악한다.', score:5 },
+      { text:'관련 기사 스크랩을 팀원들에게 공유한다.', score:3 },
+      { text:'경영진에게 보고하고 회사 차원의 대응을 요청한다.', score:3 },
+    ]
+  },
+  {
+    skill:'trend', tag:'인사이트 연결 상황',
+    text:'Z세대가 주요 고객층이 되는 시장 변화가 감지됩니다.',
+    sub:'우리 팀의 기존 방식은 X세대·밀레니얼 고객 중심으로 설계돼 있습니다.',
+    choices:[
+      { text:'세대별 차이는 과장됐다고 보고 기존 방식을 유지한다.', score:1 },
+      { text:'Z세대의 소비 패턴과 커뮤니케이션 방식을 분석해 우리 팀 업무 프로세스와 연결할 접점을 찾는다.', score:5 },
+      { text:'마케팅 부서에 전담 대응을 요청한다.', score:2 },
+      { text:'Z세대 팀원에게 인사이트를 물어보고 참고한다.', score:4 },
+    ]
+  },
+  {
+    skill:'trend', tag:'학습 전파 상황',
+    text:'팀원들이 급변하는 업무 환경 변화에 둔감하다는 인상을 받습니다.',
+    sub:'회의에서 외부 환경에 대한 이야기가 거의 나오지 않습니다.',
+    choices:[
+      { text:'개인별로 관련 자료를 찾아보도록 지시한다.', score:2 },
+      { text:'트렌드 공유 루틴을 팀에 도입하고 직접 인사이트를 연결해 토론하는 문화를 만든다.', score:5 },
+      { text:'외부 강사를 초청해 트렌드 특강을 한 번 진행한다.', score:3 },
+      { text:'팀 단위 외부 콘퍼런스 참석을 늘린다.', score:3 },
+    ]
+  },
+
+  // ── 문화예술 ──
+  {
+    skill:'culture', tag:'창의적 문제해결 상황',
+    text:'기존 방식으로 해결이 안 되는 복잡한 고객 불만이 접수됐습니다.',
+    sub:'표준 프로세스를 따랐는데도 동일한 불만이 반복되고 있습니다.',
+    choices:[
+      { text:'절차를 다시 한 번 강조하고 팀원들이 더 철저히 따르도록 한다.', score:1 },
+      { text:'고객의 경험을 여정 지도(Customer Journey Map)로 그려 근본 원인을 다른 시각에서 탐색한다.', score:5 },
+      { text:'불만 고객에게 보상을 제공하며 일단 문제를 봉합한다.', score:2 },
+      { text:'유사 업계 사례를 찾아 벤치마킹한다.', score:3 },
+    ]
+  },
+  {
+    skill:'culture', tag:'조직 문화 형성 상황',
+    text:'팀 분위기가 무겁고 회의에서 아무도 의견을 먼저 내지 않습니다.',
+    sub:'침묵이 습관화된 것 같아 우려됩니다.',
+    choices:[
+      { text:'발언하지 않으면 평가에 반영된다고 공지한다.', score:1 },
+      { text:'회의 전 "이번 주 가장 흥미로웠던 것" 같은 가벼운 아이스브레이킹을 도입하고, 모든 의견에 판단 없이 반응한다.', score:5 },
+      { text:'발언 순서를 강제 지정해 돌아가며 말하게 한다.', score:3 },
+      { text:'회의 횟수를 줄이고 비동기 소통으로 전환한다.', score:3 },
+    ]
+  },
+  {
+    skill:'culture', tag:'스토리텔링 상황',
+    text:'팀의 6개월 성과를 전사 발표에서 5분 안에 소개해야 합니다.',
+    sub:'데이터는 충분하지만 어떻게 전달할지 막막합니다.',
+    choices:[
+      { text:'수치와 그래프 위주의 슬라이드를 만들어 그대로 읽는다.', score:2 },
+      { text:'우리가 해결한 고객 문제를 스토리 형식으로 구성하고, 데이터를 그 흐름 안에 배치한다.', score:5 },
+      { text:'팀원들의 노력을 시간순으로 나열한다.', score:2 },
+      { text:'경쟁팀 대비 우위를 비교표로 제시한다.', score:3 },
+    ]
+  },
+
+  // ── 감도개선 ──
+  {
+    skill:'eq', tag:'갈등 관리 상황',
+    text:'두 팀원 사이에 지속적인 갈등이 팀 분위기를 해치고 있습니다.',
+    sub:'업무 스타일 차이에서 시작된 갈등이 감정 싸움으로 번지고 있습니다.',
+    choices:[
+      { text:'갈등은 본인들이 해결해야 한다며 개입하지 않는다.', score:1 },
+      { text:'각자와 개별 면담을 통해 감정과 원인을 파악한 후 두 사람이 함께 해결책을 찾도록 조율한다.', score:5 },
+      { text:'둘 중 더 감정적인 팀원을 따로 불러 자제를 요청한다.', score:2 },
+      { text:'팀 규칙을 새로 만들어 이런 상황이 반복되지 않도록 한다.', score:3 },
+    ]
+  },
+  {
+    skill:'eq', tag:'심리적 안전감 상황',
+    text:'팀원이 업무 실수를 보고하지 않고 숨기다 뒤늦게 발각됐습니다.',
+    sub:'"혼날까 봐 말 못 했다"는 이야기가 들렸습니다.',
+    choices:[
+      { text:'보고 누락에 대한 규정을 강화하고 재발을 엄격히 경고한다.', score:1 },
+      { text:'내가 어떤 리더십 행동이 솔직한 보고를 막았는지 돌아보고, 실수를 안전하게 공유할 수 있는 팀 문화를 만든다.', score:5 },
+      { text:'모든 팀원에게 보고 중요성을 다시 교육한다.', score:2 },
+      { text:'해당 팀원을 개인 면담해 왜 숨겼는지를 물어본다.', score:4 },
+    ]
+  },
+  {
+    skill:'eq', tag:'팀원 감정 지원 상황',
+    text:'평소 활발하던 팀원이 최근 2주 동안 눈에 띄게 무기력해 보입니다.',
+    sub:'업무 성과엔 큰 문제가 없지만 표정이 어둡고 소통이 줄었습니다.',
+    choices:[
+      { text:'업무에 지장이 없으면 개인사에 개입하지 않는 것이 예의라고 생각한다.', score:1 },
+      { text:'1:1로 가볍게 안부를 묻고, 팀원이 말하고 싶을 때 언제든 이야기할 수 있다는 신호를 준다.', score:5 },
+      { text:'동료 팀원에게 상황을 파악해달라고 부탁한다.', score:2 },
+      { text:'팀 회식을 열어 분위기를 바꿔준다.', score:3 },
+    ]
+  },
+];
+
+/* ─────────────────────────────────────────
+   STATE
+───────────────────────────────────────── */
+let userName = '', userDept = '';
+let currentQ = 0;
+let answers  = new Array(QUESTIONS.length).fill(null); // index of chosen choice
+let myResult = null;
+let allData  = [];
+
+/* ─────────────────────────────────────────
+   PAGE NAVIGATION
+───────────────────────────────────────── */
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('pg-' + id).classList.add('active');
+  window.scrollTo({ top:0, behavior:'smooth' });
+}
+function goAdmin() {
+  showPage('admin');
+  if (authed) { loadAdmData(); }
+}
+
+/* ─────────────────────────────────────────
+   QUIZ
+───────────────────────────────────────── */
+function startQuiz() {
+  userName = document.getElementById('i-name').value.trim() || '익명';
+  userDept = document.getElementById('i-dept').value.trim() || '미입력';
+  currentQ = 0;
+  answers  = new Array(QUESTIONS.length).fill(null);
+  renderQ(0);
+  showPage('quiz');
+}
+
+function renderQ(idx) {
+  const stage = document.getElementById('q-stage');
+  const q = QUESTIONS[idx];
+
+  // UPDATE TOP BAR
+  const pct = (idx / QUESTIONS.length) * 100;
+  document.getElementById('q-count').textContent =
+    String(idx + 1).padStart(2, '0') + ' / ' + QUESTIONS.length;
+  document.getElementById('q-progress').style.width = pct + '%';
+  const skillName = SKILLS.find(s => s.id === q.skill)?.name || '';
+  document.getElementById('q-label').textContent = skillName;
+
+  // CARD HTML
+  const alphas = ['A','B','C','D'];
+  const choiceHTML = q.choices.map((c, ci) => `
+    <div class="choice ${answers[idx] === ci ? 'selected' : ''}"
+         onclick="selectChoice(${idx}, ${ci})">
+      <div class="choice-alpha">${alphas[ci]}</div>
+      <div class="choice-text">${c.text}</div>
+    </div>
+  `).join('');
+
+  const card = document.createElement('div');
+  card.className = 'q-card active';
+  card.id = 'qcard-' + idx;
+  card.innerHTML = `
+    <div class="q-scenario">
+      <span class="q-tag">${q.tag}</span>
+      <div class="q-text">${q.text}</div>
+      ${q.sub ? `<div class="q-sub">${q.sub}</div>` : ''}
+    </div>
+    <div class="choices">${choiceHTML}</div>
+  `;
+
+  stage.innerHTML = '';
+  stage.appendChild(card);
+
+  // NAV BUTTONS
+  document.getElementById('q-back').style.visibility = idx === 0 ? 'hidden' : 'visible';
+  const nextBtn = document.getElementById('q-next');
+  nextBtn.disabled = answers[idx] === null;
+  nextBtn.textContent = '';
+
+  if (idx === QUESTIONS.length - 1) {
+    nextBtn.innerHTML = `결과 보기 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>`;
+  } else {
+    nextBtn.innerHTML = `다음 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>`;
+  }
+}
+
+function selectChoice(qIdx, choiceIdx) {
+  answers[qIdx] = choiceIdx;
+  document.querySelectorAll('.choice').forEach((el, i) => {
+    el.classList.toggle('selected', i === choiceIdx);
+  });
+  document.getElementById('q-next').disabled = false;
+}
+
+function prevQ() {
+  if (currentQ > 0) { currentQ--; renderQ(currentQ); }
+}
+
+function nextQ() {
+  if (answers[currentQ] === null) return;
+  if (currentQ === QUESTIONS.length - 1) {
+    calcResult();
+    return;
+  }
+  currentQ++;
+  renderQ(currentQ);
+}
+
+/* ─────────────────────────────────────────
+   CALCULATE RESULT
+───────────────────────────────────────── */
+function calcResult() {
+  // aggregate scores per skill (average of 3 questions, each 1~5)
+  const raw = {};
+  SKILLS.forEach(s => { raw[s.id] = [] });
+  QUESTIONS.forEach((q, i) => {
+    if (answers[i] !== null) {
+      raw[q.skill].push(q.choices[answers[i]].score);
+    }
+  });
+  const scores = {};
+  SKILLS.forEach(s => {
+    const arr = raw[s.id];
+    scores[s.id] = arr.length ? +(arr.reduce((a,b)=>a+b,0)/arr.length).toFixed(2) : 0;
+  });
+  const avg = +(Object.values(scores).reduce((a,b)=>a+b,0)/SKILLS.length).toFixed(2);
+
+  myResult = {
+    name: userName, dept: userDept,
+    avg, scores,
+    date: new Date().toLocaleDateString('ko-KR')
+  };
+
+  submitResult();
+  renderResult();
+  showPage('result');
+}
+
+/* ─────────────────────────────────────────
+   SUBMIT TO GOOGLE SHEETS (no-cors POST)
+───────────────────────────────────────── */
+async function submitResult() {
+  if (!myResult) return;
+  const configured = GAS_URL.indexOf('여기에') === -1;
+  if (!configured) return;
+
+  const payload = {
+    name: myResult.name, dept: myResult.dept, avg: myResult.avg,
+    ...myResult.scores
+  };
+  try {
+    await fetch(GAS_URL, {
+      method:'POST', mode:'no-cors',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify(payload)
+    });
+  } catch(e) { /* no-cors always succeeds silently */ }
+}
+
+/* ─────────────────────────────────────────
+   RENDER RESULT PAGE
+───────────────────────────────────────── */
+function renderResult() {
+  if (!myResult) return;
+  const { avg, scores, name } = myResult;
+
+  // RING
+  drawRing(avg);
+
+  document.getElementById('r-avg').textContent = avg.toFixed(1);
+
+  // TYPE & TITLE
+  const types = [
+    [4.5, 'MASTER LEADER',    '완성형 리더', '대부분의 리더십 역량이 고루 강합니다. 지금의 강점을 팀 전체에 전파하는 데 집중해보세요.'],
+    [3.5, 'GROWING LEADER',   '성장형 리더', '균형 잡힌 기반 위에 서 있습니다. 취약 역량을 보완하면 한 단계 더 도약할 수 있습니다.'],
+    [2.5, 'EMERGING LEADER',  '성장 중 리더', '리더십의 가능성이 뚜렷합니다. 집중 개발 영역을 명확히 하고 에너지를 투자해보세요.'],
+    [0,   'FOUNDATION LEADER','기초 다지는 리더', '지금이 리더십 역량을 체계적으로 쌓을 최적의 시점입니다.'],
+  ];
+  const [, type, title, desc] = types.find(([v]) => avg >= v) || types[3];
+  document.getElementById('r-type').textContent  = type;
+  document.getElementById('r-title').textContent = title;
+  document.getElementById('r-desc').textContent  = `${name}님, ${desc}`;
+
+  // RADAR
+  setTimeout(() => drawRadar(), 100);
+
+  // SCORE BARS
+  const sorted = [...SKILLS].sort((a, b) => scores[a.id] - scores[b.id]);
+  document.getElementById('r-scores').innerHTML = sorted.map(s => {
+    const v = scores[s.id], pct = (v - 1) / 4 * 100;
+    const lbl = v >= 4 ? '우수' : v >= 3 ? '보통' : '개발 필요';
+    return `<div class="score-row">
+      <div class="score-row-head">
+        <span class="score-row-name">${s.icon} ${s.name}</span>
+        <span class="score-row-val">${v.toFixed(1)} <span style="color:var(--muted);font-size:10px">${lbl}</span></span>
+      </div>
+      <div class="score-bar-bg">
+        <div class="score-bar-fill" style="width:${pct}%"></div>
+      </div>
+    </div>`;
+  }).join('');
+
+  // RECS
+  const recs = sorted.filter(s => scores[s.id] < 3.5).slice(0, 6);
+  document.getElementById('r-recs').innerHTML = recs.length
+    ? recs.map(s => {
+        const v = scores[s.id]; const urgent = v < 2.5;
+        return `<div class="rec-card">
+          ${urgent ? '<span class="rec-urgent">🔥 집중 추천</span>' : ''}
+          <div class="rec-icon" style="background:${s.bg}">${s.icon}</div>
+          <div class="rec-course">${s.course}</div>
+          <div class="rec-score-txt">현재 <span>${s.name} ${v.toFixed(1)}점</span> → 목표 4점↑</div>
+        </div>`;
+      }).join('')
+    : '<p style="color:var(--muted);font-size:13px">모든 역량이 3.5점 이상입니다! 심화 과정을 검토해보세요 🎉</p>';
+}
+
+/* ─────────────────────────────────────────
+   RING CHART (SVG arc)
+───────────────────────────────────────── */
+function drawRing(avg) {
+  const cv = document.getElementById('ring-canvas');
+  const ctx = cv.getContext('2d');
+  const W = cv.width, H = cv.height, cx = W/2, cy = H/2, R = 56, T = 10;
+  ctx.clearRect(0, 0, W, H);
+
+  // BG ring
+  ctx.beginPath();
+  ctx.arc(cx, cy, R, 0, Math.PI * 2);
+  ctx.strokeStyle = 'rgba(255,255,255,.06)';
+  ctx.lineWidth = T;
+  ctx.stroke();
+
+  // Fill ring
+  const start = -Math.PI / 2;
+  const end   = start + (Math.PI * 2 * ((avg - 1) / 4));
+  const grad  = ctx.createLinearGradient(cx-R, cy, cx+R, cy);
+  grad.addColorStop(0, '#C8B8FF');
+  grad.addColorStop(1, '#7FD4C1');
+  ctx.beginPath();
+  ctx.arc(cx, cy, R, start, end);
+  ctx.strokeStyle = grad;
+  ctx.lineWidth = T;
+  ctx.lineCap = 'round';
+  ctx.stroke();
+}
+
+/* ─────────────────────────────────────────
+   RADAR CHART
+───────────────────────────────────────── */
+function drawRadar() {
+  const cv  = document.getElementById('radar-canvas');
+  const ctx = cv.getContext('2d');
+  const W   = cv.width, H = cv.height;
+  const cx  = W/2, cy = H/2 + 8;
+  const R   = Math.min(W, H) * 0.31;
+  const n   = SKILLS.length;
+  ctx.clearRect(0, 0, W, H);
+
+  const ang = i => (Math.PI * 2 * i / n) - Math.PI / 2;
+  const gc  = 'rgba(255,255,255,.07)';
+
+  // Grid rings
+  for (let r = 1; r <= 5; r++) {
+    ctx.beginPath();
+    SKILLS.forEach((_, i) => {
+      const a = ang(i), rv = R * r / 5;
+      i === 0 ? ctx.moveTo(cx + rv*Math.cos(a), cy + rv*Math.sin(a))
+              : ctx.lineTo(cx + rv*Math.cos(a), cy + rv*Math.sin(a));
+    });
+    ctx.closePath();
+    ctx.strokeStyle = gc; ctx.lineWidth = 1; ctx.stroke();
+  }
+
+  // Spokes
+  SKILLS.forEach((_, i) => {
+    const a = ang(i);
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.lineTo(cx + R*Math.cos(a), cy + R*Math.sin(a));
+    ctx.strokeStyle = gc; ctx.lineWidth = 1; ctx.stroke();
+  });
+
+  // Data polygon
+  const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, R);
+  grad.addColorStop(0, 'rgba(200,184,255,.4)');
+  grad.addColorStop(1, 'rgba(127,212,193,.15)');
+  ctx.beginPath();
+  SKILLS.forEach((s, i) => {
+    const a = ang(i), rv = R * (myResult.scores[s.id] || 0) / 5;
+    i === 0 ? ctx.moveTo(cx + rv*Math.cos(a), cy + rv*Math.sin(a))
+            : ctx.lineTo(cx + rv*Math.cos(a), cy + rv*Math.sin(a));
+  });
+  ctx.closePath();
+  ctx.fillStyle = grad; ctx.fill();
+  ctx.strokeStyle = 'rgba(200,184,255,.6)'; ctx.lineWidth = 1.5; ctx.stroke();
+
+  // Dots
+  SKILLS.forEach((s, i) => {
+    const a = ang(i), rv = R * (myResult.scores[s.id] || 0) / 5;
+    ctx.beginPath();
+    ctx.arc(cx + rv*Math.cos(a), cy + rv*Math.sin(a), 4, 0, Math.PI*2);
+    ctx.fillStyle = '#C8B8FF'; ctx.fill();
+  });
+
+  // Labels
+  ctx.font = '500 12px Noto Sans KR, sans-serif';
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  SKILLS.forEach((s, i) => {
+    const a = ang(i), lr = R + 30;
+    ctx.fillStyle = 'rgba(255,255,255,.7)';
+    ctx.fillText(s.icon + ' ' + s.name, cx + lr*Math.cos(a), cy + lr*Math.sin(a));
+  });
+}
+
+/* ─────────────────────────────────────────
+   DOWNLOAD / PRINT
+───────────────────────────────────────── */
+function dlTxt() {
+  if (!myResult) return;
+  let t = `[ 팀장 리더십 진단 결과 ]\n이름: ${myResult.name}  소속: ${myResult.dept}  종합: ${myResult.avg}/5\n진단일: ${myResult.date}\n\n`;
+  t += `━━ 역량별 점수 ━━\n`;
+  SKILLS.forEach(s => {
+    const v = myResult.scores[s.id];
+    t += `${s.icon} ${s.name.padEnd(6)} ${'■'.repeat(Math.round(v))}${'□'.repeat(5-Math.round(v))} ${v.toFixed(1)}점\n`;
+  });
+  t += `\n━━ 추천 교육 과정 ━━\n`;
+  [...SKILLS].sort((a,b) => myResult.scores[a.id]-myResult.scores[b.id])
+    .filter(s => myResult.scores[s.id] < 3.5).slice(0, 5)
+    .forEach(s => { t += `• ${s.course} (현재 ${myResult.scores[s.id].toFixed(1)}점)\n` });
+  const a = document.createElement('a');
+  a.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent(t);
+  a.download = `리더십진단_${myResult.name}.txt`;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+}
+
+function doPrint() {
+  if (!myResult) return;
+  const rows = SKILLS.map(s => {
+    const v = myResult.scores[s.id];
+    const col = v >= 4 ? '#7FD4C1' : v >= 3 ? '#F0C07A' : '#F07A8A';
+    return `<tr><td>${s.icon} ${s.name}</td>
+      <td style="color:${col};letter-spacing:2px">${'■'.repeat(Math.round(v))}${'□'.repeat(5-Math.round(v))}</td>
+      <td style="font-weight:700;color:${col}">${v.toFixed(1)}</td></tr>`;
+  }).join('');
+  const recs = [...SKILLS].sort((a,b)=>myResult.scores[a.id]-myResult.scores[b.id])
+    .filter(s=>myResult.scores[s.id]<3.5).slice(0,5)
+    .map(s=>`<li>${s.icon} <strong>${s.course}</strong> — 현재 ${myResult.scores[s.id].toFixed(1)}점</li>`).join('');
+  const w = window.open('', '_blank', 'width=740,height=860');
+  if (!w) { alert('팝업이 차단되었습니다. 브라우저 팝업을 허용해주세요.'); return; }
+  w.document.write(`<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8">
+  <title>리더십진단_${myResult.name}</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap');
+    body{font-family:'Noto Sans KR',sans-serif;max-width:600px;margin:40px auto;color:#1a1a1a;font-size:15px;line-height:1.7}
+    h1{font-size:22px;font-weight:700;margin-bottom:4px}
+    .meta{color:#666;font-size:13px;margin-bottom:24px}
+    .avg{font-size:32px;font-weight:700;color:#7F77DD;margin-bottom:20px;display:block}
+    table{width:100%;border-collapse:collapse;margin-bottom:24px}
+    th{background:#f5f5f5;font-size:11px;font-weight:500;color:#666;padding:8px 10px;text-align:left}
+    td{padding:9px 10px;border-bottom:1px solid #eee;font-size:14px}
+    h2{font-size:15px;font-weight:700;margin:0 0 10px}
+    ul{padding-left:18px}li{margin-bottom:5px}
+    @media print{body{margin:20px}}
+  </style></head><body>
+  <h1>팀장 리더십 진단 결과</h1>
+  <div class="meta">${myResult.name} | ${myResult.dept} | ${myResult.date}</div>
+  <span class="avg">종합 ${myResult.avg.toFixed(1)} / 5.0</span>
+  <h2>역량별 점수</h2>
+  <table><thead><tr><th>역량</th><th>그래프</th><th>점수</th></tr></thead><tbody>${rows}</tbody></table>
+  <h2>추천 교육 과정</h2><ul>${recs || '<li>모든 역량 3.5점 이상 🎉</li>'}</ul>
+  <script>window.onload=function(){window.print()}<\/script></body></html>`);
+  w.document.close();
+}
+
+function retake() {
+  answers = new Array(QUESTIONS.length).fill(null);
+  currentQ = 0;
+  myResult = null;
+  document.getElementById('i-name').value = '';
+  document.getElementById('i-dept').value = '';
+  showPage('intro');
+}
+
+/* ─────────────────────────────────────────
+   ADMIN AUTH
+───────────────────────────────────────── */
+let authed = false;
+function admLogin() {
+  if (document.getElementById('adm-pw').value === ADMIN_PW) {
+    authed = true;
+    document.getElementById('adm-gate').style.display = 'none';
+    document.getElementById('adm-dash').style.display = 'block';
+    loadAdmData();
+  } else {
+    document.getElementById('adm-err').style.display = 'block';
+  }
+}
+
+/* ─────────────────────────────────────────
+   ADMIN DATA LOAD  (JSONP)
+───────────────────────────────────────── */
+function loadAdmData() {
+  const notice = document.getElementById('gas-notice');
+  const configured = GAS_URL.indexOf('여기에') === -1;
+  if (!configured) {
+    notice.className = 'gas-notice gas-warn';
+    notice.innerHTML = '⚙️ <strong>Google Sheets 미연결</strong> — index.html 상단 GAS_URL에 Apps Script 웹앱 주소를 붙여넣으면 실시간 데이터를 여기서 확인할 수 있습니다.';
+    allData = []; renderAdm(); return;
+  }
+  notice.className = 'gas-notice gas-info';
+  notice.innerHTML = '<span class="spinner"></span>데이터 불러오는 중...';
+
+  const cbName = '_gasCb_' + Date.now();
+  const script = document.createElement('script');
+  const timer = setTimeout(() => {
+    cleanup();
+    notice.className = 'gas-notice gas-err';
+    notice.innerHTML = '❌ <strong>로드 실패</strong> — Apps Script 배포 설정(액세스: 모든 사용자)을 확인하세요.';
+  }, 10000);
+
+  function cleanup() {
+    clearTimeout(timer);
+    delete window[cbName];
+    if (script.parentNode) script.parentNode.removeChild(script);
+  }
+
+  window[cbName] = function(json) {
+    cleanup();
+    const COL = { '코칭':'coaching','협상':'negot','AI활용':'ai','기획':'planning',
+      '손익관리':'pnl','글로벌어학':'global','트렌드':'trend','문화예술':'culture','감도개선':'eq' };
+    allData = (json.rows || []).map(r => ({
+      name: String(r['이름'] || ''),
+      dept: String(r['소속'] || ''),
+      avg:  parseFloat(r['평균점수']) || 0,
+      date: String(r['제출시각'] || ''),
+      scores: Object.fromEntries(
+        SKILLS.map(s => [s.id, parseFloat(r[Object.keys(COL).find(k => COL[k] === s.id)]) || 0])
+      )
+    }));
+    notice.className = 'gas-notice gas-ok';
+    notice.innerHTML = `✅ <strong>연결됨</strong> — 총 <strong>${allData.length}건</strong>의 진단 결과를 불러왔습니다.`;
+    renderAdm();
+  };
+
+  script.src = GAS_URL + '?callback=' + cbName;
+  document.head.appendChild(script);
+}
+
+function getFiltered() {
+  let d = [...allData];
+  const dept  = document.getElementById('f-dept').value;
+  const sc    = document.getElementById('f-score').value;
+  if (dept) d = d.filter(e => e.dept === dept);
+  if (sc === 'hi')  d = d.filter(e => e.avg >= 4);
+  else if (sc === 'mid') d = d.filter(e => e.avg >= 3 && e.avg < 4);
+  else if (sc === 'lo')  d = d.filter(e => e.avg < 3);
+  return d;
+}
+
+function renderAdm() {
+  const data = getFiltered(), n = data.length, total = allData.length;
+
+  // dept filter
+  const depts = [...new Set(allData.map(e => e.dept))].filter(Boolean);
+  const ds = document.getElementById('f-dept'), cur = ds.value;
+  ds.innerHTML = '<option value="">전체 소속</option>' +
+    depts.map(d => `<option${d === cur ? ' selected' : ''}>${d}</option>`).join('');
+
+  // KPI
+  const avg = n ? (data.reduce((s, e) => s + e.avg, 0) / n).toFixed(1) : 0;
+  const lo  = data.filter(e => e.avg < 3).length;
+  const hi  = data.filter(e => e.avg >= 4).length;
+  document.getElementById('kpi-grid').innerHTML = `
+    <div class="kpi"><div class="kpi-label">진단 완료</div>
+      <div class="kpi-value">${n}</div><div class="kpi-sub">명 (전체 ${total}명)</div></div>
+    <div class="kpi"><div class="kpi-label">종합 평균</div>
+      <div class="kpi-value" style="color:var(--lav)">${avg}</div><div class="kpi-sub">/ 5.0점</div></div>
+    <div class="kpi"><div class="kpi-label">집중 관리</div>
+      <div class="kpi-value" style="color:var(--coral)">${lo}</div><div class="kpi-sub">명 (3점 미만)</div></div>
+    <div class="kpi"><div class="kpi-label">우수 역량</div>
+      <div class="kpi-value" style="color:var(--teal)">${hi}</div><div class="kpi-sub">명 (4점 이상)</div></div>`;
+
+  if (!n) {
+    document.getElementById('adm-bar-chart').innerHTML =
+      '<p style="font-size:13px;color:var(--muted)">데이터가 없습니다.</p>';
+    document.getElementById('adm-dem-chart').innerHTML =
+      '<p style="font-size:13px;color:var(--muted)">데이터가 없습니다.</p>';
+    document.getElementById('adm-tbl').innerHTML =
+      '<tr><td colspan="13" style="text-align:center;padding:2rem;color:var(--muted)">데이터가 없습니다.</td></tr>';
+    return;
+  }
+
+  // AVG BAR CHART
+  const avgs = SKILLS.map(s => ({
+    s, v: +(data.reduce((a, e) => a + (e.scores[s.id] || 0), 0) / n).toFixed(2)
+  })).sort((a, b) => a.v - b.v);
+
+  document.getElementById('adm-bar-chart').innerHTML = avgs.map(({ s, v }) => {
+    const col = v >= 4 ? 'var(--teal)' : v >= 3 ? 'var(--amber)' : 'var(--coral)';
+    return `<div class="adm-bar-row">
+      <div class="adm-bar-lbl">${s.icon} ${s.name}</div>
+      <div class="adm-bar-bg"><div class="adm-bar-fill" style="width:${v/5*100}%;background:${col}"></div></div>
+      <div class="adm-bar-val" style="color:${col}">${v}</div>
+    </div>`;
+  }).join('');
+
+  // DEMAND CHART
+  const dem = SKILLS.map(s => ({
+    s, cnt: data.filter(e => (e.scores[s.id] || 0) < 3.5).length
+  })).sort((a, b) => b.cnt - a.cnt);
+  const mx = Math.max(...dem.map(d => d.cnt), 1);
+  document.getElementById('adm-dem-chart').innerHTML = dem.map(({ s, cnt }) => `
+    <div class="dem-row">
+      <div class="dem-icon" style="background:${s.bg}">${s.icon}</div>
+      <div class="dem-name">${s.name}</div>
+      <div class="dem-bg"><div class="dem-fill" style="width:${cnt/mx*100}%;background:${s.color}"></div></div>
+      <div class="dem-cnt">${cnt}명</div>
+      ${cnt >= n * .6 ? '<span class="dem-urg">🔥 긴급</span>' : ''}
+    </div>`).join('');
+
+  // PEOPLE TABLE
+  document.getElementById('adm-tbl').innerHTML =
+    [...data].sort((a, b) => a.avg - b.avg).map(e => {
+      const ch = e.avg >= 4 ? 'chip-hi' : e.avg >= 3 ? 'chip-mid' : 'chip-lo';
+      const lbl = e.avg >= 4 ? '우수' : e.avg >= 3 ? '보통' : '관리 필요';
+      return `<tr>
+        <td><strong>${e.name}</strong></td><td>${e.dept}</td>
+        <td><span class="chip ${ch}">${e.avg.toFixed(1)} ${lbl}</span></td>
+        ${SKILLS.map(s => {
+          const v = e.scores[s.id] || 0;
+          const cc = v >= 4 ? 'color:var(--teal)' : v <= 2 ? 'color:var(--coral)' : '';
+          return `<td style="${cc}">${v.toFixed(1)}</td>`;
+        }).join('')}
+        <td style="color:var(--muted);font-size:11px;white-space:nowrap">${e.date}</td>
+      </tr>`;
+    }).join('');
+}
+
+/* ─────────────────────────────────────────
+   CSV DOWNLOAD
+───────────────────────────────────────── */
+function dlCSV() {
+  const data = getFiltered();
+  if (!data.length) { alert('내보낼 데이터가 없습니다.'); return; }
+  const hdr = ['이름','소속','평균점수', ...SKILLS.map(s => s.name), '제출일'];
+  const rows = data.map(e => [
+    `"${e.name}"`, `"${e.dept}"`, e.avg.toFixed(2),
+    ...SKILLS.map(s => (e.scores[s.id] || 0).toFixed(2)),
+    `"${e.date}"`
+  ]);
+  const csv = '\uFEFF' + [hdr.map(h => `"${h}"`).join(','), ...rows.map(r => r.join(','))].join('\r\n');
+  const a = document.createElement('a');
+  a.href = 'data:text/csv;base64,' + btoa(unescape(encodeURIComponent(csv)));
+  a.download = `리더십진단_${new Date().toLocaleDateString('ko-KR').replace(/\./g,'-')}.csv`;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+}
+
+/* ─────────────────────────────────────────
+   TOAST
+───────────────────────────────────────── */
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3200);
+}
+</script>
+</body>
+</html>
